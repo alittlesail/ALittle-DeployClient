@@ -33,7 +33,7 @@ DeployClient.__Module_Setup = async function(layer_group, control, module_base_p
 	DeployClient.g_ModuleBasePathEx = ALittle.File_BaseFilePath() + module_base_path;
 	DeployClient.g_ScriptBasePath = script_base_path;
 	DeployClient.g_AUIPluinControl = await A_ModuleSystem.LoadPlugin("AUIPlugin");
-	DeployClient.g_DPLConfig = ALittle.CreateConfigSystem("ALittleDeploy.cfg");
+	DeployClient.g_DPLConfig = ALittle.CreateConfigSystem(DeployClient.g_ModuleBasePath + "/User.cfg");
 	DeployClient.g_DPLServerConfig = ALittle.CreateConfigSystem(DeployClient.g_ModuleBasePath + "/Other/Server.cfg");
 	ALittle.Math_RandomSeed(ALittle.Time_GetCurTime());
 	ALittle.System_SetThreadCount(5);

@@ -57,7 +57,7 @@ public async static __Module_Setup(ALittle.DisplayLayout layer_group, ALittle.Co
     g_AUIPluinControl = A_ModuleSystem.LoadPlugin("AUIPlugin");
     
     // 获取配置信息
-	g_DPLConfig = ALittle.CreateConfigSystem("ALittleDeploy.cfg");
+	g_DPLConfig = ALittle.CreateConfigSystem(g_ModuleBasePath.."/User.cfg");
 	// 获取配置信息
 	g_DPLServerConfig = ALittle.CreateConfigSystem(g_ModuleBasePath.."/Other/Server.cfg");
 	// 生成随机数种子
