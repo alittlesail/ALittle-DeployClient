@@ -14,7 +14,7 @@ protected class DPLUIAccount : ALittle.DisplayLayout
 	{
 		// 初始化登录
 		var client_ip = g_DPLServerConfig.GetConfig("client_ip", "139.159.176.119");
-		var client_port = g_DPLServerConfig.GetConfig("client_port", 1800);
+		var client_port = g_DPLServerConfig.GetConfig("client_port", 1801);
 		
 		g_DPLWebLoginManager = new AUIPlugin.AUIWebLoginManager();
 		g_DPLWebLoginManager.AddEventListener(this, this.HandleAccountInReconnect);
