@@ -4,7 +4,7 @@ if (typeof DeployClient === "undefined") window.DeployClient = {};
 
 DeployClient.__Browser_Setup = async function(layer_group, control, module_base_path, script_base_path) {
 	ALittle.DeleteLog(7);
-	let [window_width, window_height, flag, scale] = ALittle.System_CalcLandscape(1200, 600, 0x00000080 | 0x00000020);
+	let [window_width, window_height, flag, scale] = ALittle.System_CalcLandscape(1200, 600, (0x00000080 | 0x00000020));
 	ALittle.System_CreateView("DeployClient", window_width, window_height, flag, scale);
 	ALittle.System_SetViewIcon(module_base_path + "Other/ic_launcher.png");
 	await A_ModuleSystem.LoadModule(module_base_path, "DeployClient");
