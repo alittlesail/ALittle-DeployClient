@@ -13,12 +13,12 @@ DeployClient.DPLCenter = JavaScript.Class(undefined, {
 	},
 	CreateHttpFileSender : function(file_path) {
 		let http_ip = DeployClient.g_DPLServerConfig.GetConfig("http_ip", "139.159.176.119");
-		let http_port = DeployClient.g_DPLServerConfig.GetConfig("http_port", 1801);
+		let http_port = DeployClient.g_DPLServerConfig.GetConfig("http_port", 1800);
 		return ALittle.CreateHttpFileSender(http_ip, http_port, file_path, 0);
 	},
 	CreateHttpSender : function() {
 		let http_ip = DeployClient.g_DPLServerConfig.GetConfig("http_ip", "139.159.176.119");
-		let http_port = DeployClient.g_DPLServerConfig.GetConfig("http_port", 1801);
+		let http_port = DeployClient.g_DPLServerConfig.GetConfig("http_port", 1800);
 		return ALittle.CreateHttpSender(http_ip, http_port);
 	},
 	Shutdown : function() {
