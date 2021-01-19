@@ -422,7 +422,7 @@ DeployClient.DPLUITaskCenter = JavaScript.Class(ALittle.DisplayLayout, {
 		if (info.status === 0) {
 			task_info._status.text = "";
 		} else {
-			task_info._status.text = ALittle.Math_Floor(info.progress * 100) / 100 + "%";
+			task_info._status.text = ALittle.Math_Floor(info.progress * 10000) / 100 + "%";
 		}
 	},
 	UpdateJobStatus : function(msg) {

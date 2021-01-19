@@ -455,7 +455,7 @@ function DeployClient.DPLUITaskCenter:UpdateTaskStatus(info)
 	if info.status == 0 then
 		task_info._status.text = ""
 	else
-		task_info._status.text = ALittle.Math_Floor(info.progress * 100) / 100 .. "%"
+		task_info._status.text = ALittle.Math_Floor(info.progress * 10000) / 100 .. "%"
 	end
 end
 

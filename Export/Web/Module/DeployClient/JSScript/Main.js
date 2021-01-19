@@ -33,7 +33,7 @@ DeployClient.__Module_Setup = async function(layer_group, control, module_base_p
 	DeployClient.g_ModuleBasePathEx = ALittle.File_BaseFilePath() + module_base_path;
 	DeployClient.g_ScriptBasePath = script_base_path;
 	DeployClient.g_AUIPluinControl = await A_ModuleSystem.LoadPlugin("AUIPlugin");
-	DeployClient.g_DPLConfig = ALittle.CreateConfigSystem("ALittleDeploy.cfg");
+	DeployClient.g_DPLConfig = ALittle.CreateConfigSystem(DeployClient.g_ModuleBasePath + "/User.cfg");
 	DeployClient.g_DPLServerConfig = ALittle.CreateConfigSystem(DeployClient.g_ModuleBasePath + "/Other/Server.cfg");
 	ALittle.Math_RandomSeed(ALittle.Time_GetCurTime());
 	ALittle.System_SetThreadCount(5);
@@ -45,6 +45,7 @@ DeployClient.__Module_Setup = async function(layer_group, control, module_base_p
 	DeployClient.g_DialogLayer.width_type = 4;
 	DeployClient.g_DialogLayer.height_type = 4;
 	DeployClient.g_LayerGroup.AddChild(DeployClient.g_DialogLayer);
+	await RequireFromPaths(script_base_path, "Utility/", ["FileRemoteSelectLayout.alittle", "FileRemoteSelectDialog.alittle"]);
 	await RequireFromPaths(script_base_path, "Dialog/", ["CommonJobDialog.alittle", "BatchJobDialog.alittle", "WaitProcessExitJobDialog.alittle"
 		, "SendVirtualKeyJobDialog.alittle", "KillProcessJobDialog.alittle", "DeepCopyJobDialog.alittle"
 		, "CreateProcessJobDialog.alittle", "CopyFileJobDialog.alittle"]);

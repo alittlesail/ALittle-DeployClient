@@ -266,7 +266,7 @@ public class DPLUITaskCenter : ALittle.DisplayLayout
         if (info.status == DeployServer.TaskStatus.IDLE)
         	task_info._status.text = "";
         else
-            task_info._status.text = ALittle.Math_Floor(info.progress * 100) / 100 .."%";
+            task_info._status.text = ALittle.Math_Floor(info.progress * 10000) / 100 .."%";
     }
 
     public fun UpdateJobStatus(DeployServer.NJobStatus msg)
