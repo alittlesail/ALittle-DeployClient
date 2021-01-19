@@ -32,4 +32,9 @@ function DeployClient.SendVirtualKeyJobDialog:GetDetail()
 	return detail
 end
 
+function DeployClient.SendVirtualKeyJobDialog:HandleExeBrowserClick(event)
+	self._exe_path.text = DeployClient.g_FileRemoteSelectDialog:ShowSelect()
+end
+DeployClient.SendVirtualKeyJobDialog.HandleExeBrowserClick = Lua.CoWrap(DeployClient.SendVirtualKeyJobDialog.HandleExeBrowserClick)
+
 end

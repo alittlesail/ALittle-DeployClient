@@ -35,4 +35,14 @@ function DeployClient.CopyFileJobDialog:GetDetail()
 	return detail
 end
 
+function DeployClient.CopyFileJobDialog:HandleSrcBrowserClick(event)
+	self._src_dir.text = DeployClient.g_FileRemoteSelectDialog:ShowSelect()
+end
+DeployClient.CopyFileJobDialog.HandleSrcBrowserClick = Lua.CoWrap(DeployClient.CopyFileJobDialog.HandleSrcBrowserClick)
+
+function DeployClient.CopyFileJobDialog:HandleDstBrowserClick(event)
+	self._dst_dir.text = DeployClient.g_FileRemoteSelectDialog:ShowSelect()
+end
+DeployClient.CopyFileJobDialog.HandleDstBrowserClick = Lua.CoWrap(DeployClient.CopyFileJobDialog.HandleDstBrowserClick)
+
 end

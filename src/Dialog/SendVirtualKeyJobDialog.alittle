@@ -29,4 +29,9 @@ public class SendVirtualKeyJobDialog : CommonJobDialog
         detail.virtualkey_cmd = ALittle.String_SplitSepList(this._cmd_list.text, ["\r", "\n"]);
         return detail;
     }
+
+    private async fun HandleExeBrowserClick(ALittle.UIClickEvent event)
+    {
+        this._exe_path.text = g_FileRemoteSelectDialog.ShowSelect();
+    }
 }

@@ -33,4 +33,14 @@ public class CopyFileJobDialog : CommonJobDialog
         detail.copyfile_file = ALittle.String_SplitSepList(this._file_list.text, ["\r", "\n"]);
         return detail;
     }
+
+    private async fun HandleSrcBrowserClick(ALittle.UIClickEvent event)
+    {
+        this._src_dir.text = g_FileRemoteSelectDialog.ShowSelect();
+    }
+
+    private async fun HandleDstBrowserClick(ALittle.UIClickEvent event)
+    {
+        this._dst_dir.text = g_FileRemoteSelectDialog.ShowSelect();
+    }
 }

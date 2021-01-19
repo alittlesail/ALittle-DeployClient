@@ -35,4 +35,14 @@ function DeployClient.CreateProcessJobDialog:GetDetail()
 	return detail
 end
 
+function DeployClient.CreateProcessJobDialog:HandleDirBrowserClick(event)
+	self._dir.text = DeployClient.g_FileRemoteSelectDialog:ShowSelect()
+end
+DeployClient.CreateProcessJobDialog.HandleDirBrowserClick = Lua.CoWrap(DeployClient.CreateProcessJobDialog.HandleDirBrowserClick)
+
+function DeployClient.CreateProcessJobDialog:HandleCmdBrowserClick(event)
+	self._cmd.text = DeployClient.g_FileRemoteSelectDialog:ShowSelect()
+end
+DeployClient.CreateProcessJobDialog.HandleCmdBrowserClick = Lua.CoWrap(DeployClient.CreateProcessJobDialog.HandleCmdBrowserClick)
+
 end

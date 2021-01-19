@@ -33,4 +33,14 @@ public class CreateProcessJobDialog : CommonJobDialog
         detail.createprocess_param = this._param.text;
         return detail;
     }
+
+    private async fun HandleDirBrowserClick(ALittle.UIClickEvent event)
+    {
+        this._dir.text = g_FileRemoteSelectDialog.ShowSelect();
+    }
+
+    private async fun HandleCmdBrowserClick(ALittle.UIClickEvent event)
+    {
+        this._cmd.text = g_FileRemoteSelectDialog.ShowSelect();
+    }
 }
