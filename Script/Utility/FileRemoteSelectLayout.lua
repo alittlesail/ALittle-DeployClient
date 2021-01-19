@@ -31,6 +31,10 @@ DeployClient.FileRemoteSelectLayout = Lua.Class(AUIPlugin.AUIFileRemoteSelectLay
 
 function DeployClient.FileRemoteSelectLayout:GetNameListByDir(path)
 	local ___COROUTINE = coroutine.running()
+	local index = ALittle.String_Find(path, ":")
+	if index ~= nil and index == ALittle.String_Len(path) then
+		path = path .. "\\"
+	end
 	local msg = {}
 	msg.path = path
 	local error, result = ALittle.IMsgCommon.InvokeRPC(-505877607, DeployClient.g_DPLWebLoginManager.msg_client, msg)

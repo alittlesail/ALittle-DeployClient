@@ -5,6 +5,9 @@ public class FileRemoteSelectLayout : AUIPlugin.AUIFileRemoteSelectLayout
 {
     private await fun GetNameListByDir(string path) : Map<string, ALittle.PathAttribute>
     {
+        var index = ALittle.String_Find(path, ":");
+        if (index != null && index == ALittle.String_Len(path)) path = path.."\\";
+
         var msg = new DeployServer.QShowPathInfo();
         msg.path = path;
         var error, result = DeployServer.HandleShowPathInfo(g_DPLWebLoginManager.msg_client, msg);

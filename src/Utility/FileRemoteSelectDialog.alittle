@@ -63,6 +63,15 @@ public class FileRemoteSelectDialog : ALittle.EventDispatcher
     // 显示
 	public await fun ShowSelect() : string
 	{
+        var msg = new DeployServer.QShowCurPath();
+        var error, rsp = DeployServer.HandleShowCurPath(g_DPLWebLoginManager.msg_client, msg);
+        if (error == null)
+        {
+            var index = ALittle.String_Find(rsp.path, ":");
+            if (index != null) this.SetBasePath(ALittle.String_Sub(rsp.path, 1, index));
+            else this.SetBasePath(rsp.path);
+        }
+
 		this.ShowDialog();
         var result = this._layout.ShowSelect();
         this._dialog.visible = false;

@@ -7,6 +7,18 @@ local ALittle = ALittle
 local ___pairs = pairs
 local ___ipairs = ipairs
 
+ALittle.RegStruct(-1210770538, "DeployServer.AShowCurPath", {
+name = "DeployServer.AShowCurPath", ns_name = "DeployServer", rl_name = "AShowCurPath", hash_code = -1210770538,
+name_list = {"path"},
+type_list = {"string"},
+option_map = {}
+})
+ALittle.RegStruct(1018450360, "DeployServer.QShowCurPath", {
+name = "DeployServer.QShowCurPath", ns_name = "DeployServer", rl_name = "QShowCurPath", hash_code = 1018450360,
+name_list = {},
+type_list = {},
+option_map = {}
+})
 
 assert(ALittle.EventDispatcher, " extends class:ALittle.EventDispatcher is nil")
 DeployClient.FileRemoteSelectDialog = Lua.Class(ALittle.EventDispatcher, "DeployClient.FileRemoteSelectDialog")
@@ -56,6 +68,16 @@ end
 
 function DeployClient.FileRemoteSelectDialog:ShowSelect()
 	local ___COROUTINE = coroutine.running()
+	local msg = {}
+	local error, rsp = ALittle.IMsgCommon.InvokeRPC(1018450360, DeployClient.g_DPLWebLoginManager.msg_client, msg)
+	if error == nil then
+		local index = ALittle.String_Find(rsp.path, ":")
+		if index ~= nil then
+			self:SetBasePath(ALittle.String_Sub(rsp.path, 1, index))
+		else
+			self:SetBasePath(rsp.path)
+		end
+	end
 	self:ShowDialog()
 	local result = self._layout:ShowSelect()
 	self._dialog.visible = false
