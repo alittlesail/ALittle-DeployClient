@@ -19,8 +19,11 @@ class DPLCenter
 
     public fun CreateHttpFileSender(string file_path) : ALittle.IHttpFileSender
     {
-		// 初始化登录
-		var http_ip = g_DPLServerConfig.GetConfig("http_ip", "139.159.176.119");
+        var default_ip = "";
+        [Language(JavaScript)]
+        default_ip = g_Control.host;
+
+		var http_ip = g_DPLServerConfig.GetConfig("http_ip", default_ip);
 		var http_port = g_DPLServerConfig.GetConfig("http_port", 1800);
    
         return ALittle.CreateHttpFileSender(http_ip, http_port, file_path, 0);
@@ -28,8 +31,11 @@ class DPLCenter
 
     public fun CreateHttpSender() : ALittle.IHttpSender
     {
-		// 初始化登录
-		var http_ip = g_DPLServerConfig.GetConfig("http_ip", "139.159.176.119");
+        var default_ip = "";
+        [Language(JavaScript)]
+        default_ip = g_Control.host;
+
+		var http_ip = g_DPLServerConfig.GetConfig("http_ip", default_ip);
 		var http_port = g_DPLServerConfig.GetConfig("http_port", 1800);
     
         return ALittle.CreateHttpSender(http_ip, http_port);

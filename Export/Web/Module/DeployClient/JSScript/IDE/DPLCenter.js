@@ -12,12 +12,16 @@ DeployClient.DPLCenter = JavaScript.Class(undefined, {
 		}).bind(this));
 	},
 	CreateHttpFileSender : function(file_path) {
-		let http_ip = DeployClient.g_DPLServerConfig.GetConfig("http_ip", "139.159.176.119");
+		let default_ip = "";
+		default_ip = DeployClient.g_Control.host;
+		let http_ip = DeployClient.g_DPLServerConfig.GetConfig("http_ip", default_ip);
 		let http_port = DeployClient.g_DPLServerConfig.GetConfig("http_port", 1800);
 		return ALittle.CreateHttpFileSender(http_ip, http_port, file_path, 0);
 	},
 	CreateHttpSender : function() {
-		let http_ip = DeployClient.g_DPLServerConfig.GetConfig("http_ip", "139.159.176.119");
+		let default_ip = "";
+		default_ip = DeployClient.g_Control.host;
+		let http_ip = DeployClient.g_DPLServerConfig.GetConfig("http_ip", default_ip);
 		let http_port = DeployClient.g_DPLServerConfig.GetConfig("http_port", 1800);
 		return ALittle.CreateHttpSender(http_ip, http_port);
 	},

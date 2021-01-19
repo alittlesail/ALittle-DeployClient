@@ -12,8 +12,11 @@ protected class DPLUIAccount : ALittle.DisplayLayout
 
 	public fun TCtor()
 	{
-		// 初始化登录
-		var client_ip = g_DPLServerConfig.GetConfig("client_ip", "139.159.176.119");
+        var default_ip = "";
+        [Language(JavaScript)]
+        default_ip = g_Control.host;
+
+		var client_ip = g_DPLServerConfig.GetConfig("client_ip", default_ip);
 		var client_port = g_DPLServerConfig.GetConfig("client_port", 1801);
 		
 		g_DPLWebLoginManager = new AUIPlugin.AUIWebLoginManager();

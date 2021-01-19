@@ -12,7 +12,7 @@ DeployClient.DPLUIMainMenu = JavaScript.Class(ALittle.Linear, {
 			if (child === undefined) break;
 			child.group = group;
 		}
-		let version_ip = DeployClient.g_DPLServerConfig.GetConfig("version_ip", "139.159.176.119");
+		let version_ip = DeployClient.g_DPLServerConfig.GetConfig("version_ip", "www.alittleide.com");
 		let version_port = DeployClient.g_DPLServerConfig.GetConfig("version_port", 1100);
 		this._version_manager = ALittle.NewObject(AUIPlugin.AUIVersionManager, version_ip, version_port, "alittle", "ALittleDeploy");
 	},

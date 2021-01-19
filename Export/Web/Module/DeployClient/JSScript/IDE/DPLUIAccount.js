@@ -31,7 +31,9 @@ DeployClient.g_DPLWebLoginManager = undefined;
 if (ALittle.DisplayLayout === undefined) throw new Error(" extends class:ALittle.DisplayLayout is undefined");
 DeployClient.DPLUIAccount = JavaScript.Class(ALittle.DisplayLayout, {
 	TCtor : function() {
-		let client_ip = DeployClient.g_DPLServerConfig.GetConfig("client_ip", "139.159.176.119");
+		let default_ip = "";
+		default_ip = DeployClient.g_Control.host;
+		let client_ip = DeployClient.g_DPLServerConfig.GetConfig("client_ip", default_ip);
 		let client_port = DeployClient.g_DPLServerConfig.GetConfig("client_port", 1801);
 		DeployClient.g_DPLWebLoginManager = ALittle.NewObject(AUIPlugin.AUIWebLoginManager);
 		DeployClient.g_DPLWebLoginManager.AddEventListener(___all_struct.get(-262794256), this, this.HandleAccountInReconnect);
