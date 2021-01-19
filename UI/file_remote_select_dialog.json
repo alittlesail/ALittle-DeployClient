@@ -1,0 +1,1 @@
+{"file_remote_select_dialog":{"__extends":"dialog","__childs":[{"width_value":10,"__extends":"file_remote_select_layout","__module":"AUIPlugin","__link":"_layout","__target_class":["DeployClient","FileRemoteSelectLayout"],"x_type":3}],"title":"选择文件或文件夹","width_value":428,"__module":"AUIPlugin","height_value":436}}

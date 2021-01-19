@@ -19,13 +19,13 @@ end
 
 function DeployClient.DPLCenter:CreateHttpFileSender(file_path)
 	local http_ip = DeployClient.g_DPLServerConfig:GetConfig("http_ip", "139.159.176.119")
-	local http_port = DeployClient.g_DPLServerConfig:GetConfig("http_port", 1801)
+	local http_port = DeployClient.g_DPLServerConfig:GetConfig("http_port", 1800)
 	return ALittle.CreateHttpFileSender(http_ip, http_port, file_path, 0)
 end
 
 function DeployClient.DPLCenter:CreateHttpSender()
 	local http_ip = DeployClient.g_DPLServerConfig:GetConfig("http_ip", "139.159.176.119")
-	local http_port = DeployClient.g_DPLServerConfig:GetConfig("http_port", 1801)
+	local http_port = DeployClient.g_DPLServerConfig:GetConfig("http_port", 1800)
 	return ALittle.CreateHttpSender(http_ip, http_port)
 end
 

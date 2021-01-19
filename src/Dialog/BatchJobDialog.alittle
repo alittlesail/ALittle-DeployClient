@@ -33,4 +33,9 @@ public class BatchJobDialog : CommonJobDialog
         detail.batch_param = this._param.text;
         return detail;
     }
+
+    private async fun HandleBrowserClick(ALittle.UIClickEvent event)
+    {
+        this._dir.text = g_FileRemoteSelectDialog.ShowSelect();
+    }
 }

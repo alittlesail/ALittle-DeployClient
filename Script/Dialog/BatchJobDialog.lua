@@ -35,4 +35,9 @@ function DeployClient.BatchJobDialog:GetDetail()
 	return detail
 end
 
+function DeployClient.BatchJobDialog:HandleBrowserClick(event)
+	self._dir.text = DeployClient.g_FileRemoteSelectDialog:ShowSelect()
+end
+DeployClient.BatchJobDialog.HandleBrowserClick = Lua.CoWrap(DeployClient.BatchJobDialog.HandleBrowserClick)
+
 end

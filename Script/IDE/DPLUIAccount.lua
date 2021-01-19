@@ -39,7 +39,7 @@ DeployClient.DPLUIAccount = Lua.Class(ALittle.DisplayLayout, "DeployClient.DPLUI
 
 function DeployClient.DPLUIAccount:TCtor()
 	local client_ip = DeployClient.g_DPLServerConfig:GetConfig("client_ip", "139.159.176.119")
-	local client_port = DeployClient.g_DPLServerConfig:GetConfig("client_port", 1800)
+	local client_port = DeployClient.g_DPLServerConfig:GetConfig("client_port", 1801)
 	DeployClient.g_DPLWebLoginManager = AUIPlugin.AUIWebLoginManager()
 	DeployClient.g_DPLWebLoginManager:AddEventListener(___all_struct[-262794256], self, self.HandleAccountInReconnect)
 	DeployClient.g_DPLWebLoginManager:AddEventListener(___all_struct[-1848509213], self, self.HandleAccountInLogout)
