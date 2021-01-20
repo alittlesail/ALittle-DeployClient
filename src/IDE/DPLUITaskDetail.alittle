@@ -158,6 +158,7 @@ public class DPLUITaskDetail : ALittle.DisplayLayout
         menu.AddItem("等待进程退出", bind(this.HandleNewCommonJob, this, "waitprocessexit_job_dialog"));
         menu.AddItem("创建进程", bind(this.HandleNewCommonJob, this, "createprocess_job_dialog"));
         menu.AddItem("杀死进程", bind(this.HandleNewCommonJob, this, "killprocess_job_dialog"));
+        menu.AddItem("代码检查", bind(this.HandleNewCommonJob, this, "resharper_redmine_job_dialog"));
         menu.Show();
     }
 
@@ -220,6 +221,8 @@ public class DPLUITaskDetail : ALittle.DisplayLayout
         	job_item._button.text = "[创建进程] "..job_item.info.job_name..":"..job_item.info.detail.createprocess_cmd;
         elseif (job_item.info.job_type == DeployServer.JobType.KILLPROCESS)
         	job_item._button.text = "[杀死进程] "..job_item.info.job_name;
+        elseif (job_item.info.job_type == DeployServer.JobType.RESHARPERREDMINE)
+        	job_item._button.text = "[代码检查] "..job_item.info.job_name;
 
         if (this._task_item.info.status == DeployServer.TaskStatus.IDLE)
             job_item._status.text = "";
@@ -315,6 +318,8 @@ public class DPLUITaskDetail : ALittle.DisplayLayout
             ui = "createprocess_job_dialog";
         elseif (info.info.job_type == DeployServer.JobType.KILLPROCESS)
             ui = "killprocess_job_dialog";
+        elseif (info.info.job_type == DeployServer.JobType.RESHARPERREDMINE)
+            ui = "resharper_redmine_job_dialog";
 
         if (ui != null)
         {

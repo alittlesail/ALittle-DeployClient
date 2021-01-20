@@ -1,0 +1,73 @@
+
+namespace DeployClient;
+
+public class ReSharperRedmineJobDialog : CommonJobDialog
+{
+	private ALittle.ImageInput _resharper_exe_path;
+    private ALittle.ImageInput _resharper_cache_path;
+    private ALittle.ImageInput _resharper_output_path;
+    private ALittle.ImageInput _resharper_sln_path;
+	private ALittle.ImageInput _redmine_url;
+	private ALittle.ImageInput _redmine_account;
+	private ALittle.ImageInput _redmine_password;
+
+    private get type() : int { return DeployServer.JobType.BATCH; }
+
+    private fun ShowDetail(DeployServer.JobInfoDetail detail)
+    {
+        if (detail != null)
+        {
+            this._resharper_exe_path.text = detail.r2r_resharper_exe_path;
+            this._resharper_cache_path.text = detail.r2r_resharper_cache_path;
+            this._resharper_output_path.text = detail.r2r_resharper_output_path;
+            this._resharper_sln_path.text = detail.r2r_resharper_sln_path;
+            this._redmine_url.text = detail.r2r_redmine_url;
+            this._redmine_account.text = detail.r2r_redmine_account;
+            this._redmine_password.text = detail.r2r_redmine_password;
+        }
+        else
+        {
+            this._resharper_exe_path.text = "";
+            this._resharper_cache_path.text = "";
+            this._resharper_output_path.text = "";
+            this._resharper_sln_path.text = "";
+            this._redmine_url.text = "";
+            this._redmine_account.text = "";
+            this._redmine_password.text = "";
+        }
+    }
+
+    private fun GetDetail() : DeployServer.JobInfoDetail
+    {
+        var detail = new DeployServer.JobInfoDetail();
+        detail.r2r_resharper_exe_path = this._resharper_exe_path.text;
+        detail.r2r_resharper_cache_path = this._resharper_cache_path.text;
+        detail.r2r_resharper_output_path = this._resharper_output_path.text;
+        detail.r2r_resharper_sln_path = this._resharper_sln_path.text;
+        detail.r2r_redmine_url = this._redmine_url.text;
+        detail.r2r_redmine_account = this._redmine_account.text;
+        detail.r2r_redmine_password = this._redmine_password.text;
+        return detail;
+    }
+
+    private async fun HandleExeBrowserClick(ALittle.UIClickEvent event)
+    {
+        this._resharper_exe_path.text = g_FileRemoteSelectDialog.ShowSelect();
+    }
+
+    private async fun HandleCacheBrowserClick(ALittle.UIClickEvent event)
+    {
+        this._resharper_cache_path.text = g_FileRemoteSelectDialog.ShowSelect();
+    }
+
+    private async fun HandleOutputBrowserClick(ALittle.UIClickEvent event)
+    {
+        this._resharper_output_path.text = g_FileRemoteSelectDialog.ShowSelect();
+    }
+
+    private async fun HandleSlnBrowserClick(ALittle.UIClickEvent event)
+    {
+        this._resharper_sln_path.text = g_FileRemoteSelectDialog.ShowSelect();
+    }
+}
+
