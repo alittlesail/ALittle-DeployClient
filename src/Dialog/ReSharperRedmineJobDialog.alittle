@@ -14,6 +14,8 @@ public class ReSharperRedmineJobDialog : CommonJobDialog
 	private ALittle.ImageInput _redmine_password;
     private ALittle.ImageInput _redmine_project_id;
     private ALittle.ImageInput _redmine_account_id;
+    private ALittle.ImageEdit _redmine_account_map;
+    private ALittle.DropDown _code_tool;
 
     private get type() : int { return DeployServer.JobType.RESHARPERREDMINE; }
 
@@ -32,6 +34,15 @@ public class ReSharperRedmineJobDialog : CommonJobDialog
             this._redmine_project_id.text = detail.r2r_redmine_project_id;
             this._redmine_account_id.text = detail.r2r_redmine_account_id;
             this._curl_exe_path.text = detail.r2r_curl_exe_path;
+
+            var list = new List<string>();
+            for (var account, num in detail.r2r_redmine_account_map)
+            	ALittle.List_Push(list, num..":"..account);
+            this._redmine_account_map.text = ALittle.String_Join(list, ";");
+
+            if (detail.r2r_code_tool == "svn") this._code_tool.text = "svn";
+            elseif (detail.r2r_code_tool == "git") this._code_tool.text = "git";
+            else this._code_tool.text = "";
         }
         else
         {
@@ -46,6 +57,8 @@ public class ReSharperRedmineJobDialog : CommonJobDialog
             this._redmine_project_id.text = "";
             this._redmine_account_id.text = "";
             this._curl_exe_path.text = "";
+            this._redmine_account_map.text = "";
+            this._code_tool.text = "";
         }
     }
 
@@ -63,6 +76,23 @@ public class ReSharperRedmineJobDialog : CommonJobDialog
         detail.r2r_redmine_project_id = this._redmine_project_id.text;
         detail.r2r_redmine_account_id = this._redmine_account_id.text;
         detail.r2r_curl_exe_path = this._curl_exe_path.text;
+
+        detail.r2r_redmine_account_map = new Map<string, int>();
+        var list = ALittle.String_Split(this._redmine_account_map.text, ";");
+        for (var index, info in list)
+        {
+            var split_list = ALittle.String_Split(info, ":");
+            if (ALittle.List_Len(split_list) == 2)
+            {
+                var num = ALittle.Math_ToInt(split_list[2]);
+                if (num != null) detail.r2r_redmine_account_map[split_list[1]] = num;
+            }
+        }
+
+        if (this._code_tool.text == "svn") detail.r2r_code_tool = "svn";
+        elseif (this._code_tool.text == "git") detail.r2r_code_tool = "git";
+        else detail.r2r_code_tool = "";
+
         return detail;
     }
 
