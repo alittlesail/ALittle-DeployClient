@@ -28,6 +28,18 @@ function DeployClient.ReSharperRedmineJobDialog:ShowDetail(detail)
 		self._redmine_project_id.text = detail.r2r_redmine_project_id
 		self._redmine_account_id.text = detail.r2r_redmine_account_id
 		self._curl_exe_path.text = detail.r2r_curl_exe_path
+		local list = {}
+		for account, num in ___pairs(detail.r2r_redmine_account_map) do
+			ALittle.List_Push(list, num .. ":" .. account)
+		end
+		self._redmine_account_map.text = ALittle.String_Join(list, ";")
+		if detail.r2r_code_tool == "svn" then
+			self._code_tool.text = "svn"
+		elseif detail.r2r_code_tool == "git" then
+			self._code_tool.text = "git"
+		else
+			self._code_tool.text = ""
+		end
 	else
 		self._resharper_exe_path.text = ""
 		self._resharper_cache_path.text = ""
@@ -40,6 +52,8 @@ function DeployClient.ReSharperRedmineJobDialog:ShowDetail(detail)
 		self._redmine_project_id.text = ""
 		self._redmine_account_id.text = ""
 		self._curl_exe_path.text = ""
+		self._redmine_account_map.text = ""
+		self._code_tool.text = ""
 	end
 end
 
@@ -56,6 +70,24 @@ function DeployClient.ReSharperRedmineJobDialog:GetDetail()
 	detail.r2r_redmine_project_id = self._redmine_project_id.text
 	detail.r2r_redmine_account_id = self._redmine_account_id.text
 	detail.r2r_curl_exe_path = self._curl_exe_path.text
+	detail.r2r_redmine_account_map = {}
+	local list = ALittle.String_Split(self._redmine_account_map.text, ";")
+	for index, info in ___ipairs(list) do
+		local split_list = ALittle.String_Split(info, ":")
+		if ALittle.List_Len(split_list) == 2 then
+			local num = ALittle.Math_ToInt(split_list[2])
+			if num ~= nil then
+				detail.r2r_redmine_account_map[split_list[1]] = num
+			end
+		end
+	end
+	if self._code_tool.text == "svn" then
+		detail.r2r_code_tool = "svn"
+	elseif self._code_tool.text == "git" then
+		detail.r2r_code_tool = "git"
+	else
+		detail.r2r_code_tool = ""
+	end
 	return detail
 end
 
