@@ -22,6 +22,9 @@ DeployClient.SendVirtualKeyJobDialog = JavaScript.Class(DeployClient.CommonJobDi
 		detail.virtualkey_cmd = ALittle.String_SplitSepList(this._cmd_list.text, ["\r", "\n"]);
 		return detail;
 	},
+	HandleExeBrowserClick : async function(event) {
+		this._exe_path.text = await DeployClient.g_FileRemoteSelectDialog.ShowSelect();
+	},
 }, "DeployClient.SendVirtualKeyJobDialog");
 
 }

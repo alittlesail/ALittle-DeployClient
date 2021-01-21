@@ -8,6 +8,7 @@ public class ReSharperRedmineJobDialog : CommonJobDialog
     private ALittle.ImageInput _resharper_cache_path;
     private ALittle.ImageInput _resharper_output_path;
     private ALittle.ImageInput _resharper_sln_path;
+    private ALittle.ImageInput _resharper_dotsettings_path;
 	private ALittle.ImageInput _redmine_url;
 	private ALittle.ImageInput _redmine_account;
 	private ALittle.ImageInput _redmine_password;
@@ -24,6 +25,7 @@ public class ReSharperRedmineJobDialog : CommonJobDialog
             this._resharper_cache_path.text = detail.r2r_resharper_cache_path;
             this._resharper_output_path.text = detail.r2r_resharper_output_path;
             this._resharper_sln_path.text = detail.r2r_resharper_sln_path;
+            this._resharper_dotsettings_path.text = detail.r2r_resharper_dotsettings_path;
             this._redmine_url.text = detail.r2r_redmine_url;
             this._redmine_account.text = detail.r2r_redmine_account;
             this._redmine_password.text = detail.r2r_redmine_password;
@@ -37,6 +39,7 @@ public class ReSharperRedmineJobDialog : CommonJobDialog
             this._resharper_cache_path.text = "";
             this._resharper_output_path.text = "";
             this._resharper_sln_path.text = "";
+            this._resharper_dotsettings_path.text = "";
             this._redmine_url.text = "";
             this._redmine_account.text = "";
             this._redmine_password.text = "";
@@ -53,6 +56,7 @@ public class ReSharperRedmineJobDialog : CommonJobDialog
         detail.r2r_resharper_cache_path = this._resharper_cache_path.text;
         detail.r2r_resharper_output_path = this._resharper_output_path.text;
         detail.r2r_resharper_sln_path = this._resharper_sln_path.text;
+        detail.r2r_resharper_dotsettings_path = this._resharper_dotsettings_path.text;
         detail.r2r_redmine_url = this._redmine_url.text;
         detail.r2r_redmine_account = this._redmine_account.text;
         detail.r2r_redmine_password = this._redmine_password.text;
@@ -85,6 +89,11 @@ public class ReSharperRedmineJobDialog : CommonJobDialog
     private async fun HandleCurlBrowserClick(ALittle.UIClickEvent event)
     {
         this._curl_exe_path.text = g_FileRemoteSelectDialog.ShowSelect();
+    }
+
+    private async fun HandleDotSettingsBrowserClick(ALittle.UIClickEvent event)
+    {
+        this._resharper_dotsettings_path.text = g_FileRemoteSelectDialog.ShowSelect();
     }
 }
 

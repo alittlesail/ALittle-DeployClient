@@ -25,6 +25,12 @@ DeployClient.CreateProcessJobDialog = JavaScript.Class(DeployClient.CommonJobDia
 		detail.createprocess_param = this._param.text;
 		return detail;
 	},
+	HandleDirBrowserClick : async function(event) {
+		this._dir.text = await DeployClient.g_FileRemoteSelectDialog.ShowSelect();
+	},
+	HandleCmdBrowserClick : async function(event) {
+		this._cmd.text = await DeployClient.g_FileRemoteSelectDialog.ShowSelect();
+	},
 }, "DeployClient.CreateProcessJobDialog");
 
 }

@@ -21,6 +21,7 @@ function DeployClient.ReSharperRedmineJobDialog:ShowDetail(detail)
 		self._resharper_cache_path.text = detail.r2r_resharper_cache_path
 		self._resharper_output_path.text = detail.r2r_resharper_output_path
 		self._resharper_sln_path.text = detail.r2r_resharper_sln_path
+		self._resharper_dotsettings_path.text = detail.r2r_resharper_dotsettings_path
 		self._redmine_url.text = detail.r2r_redmine_url
 		self._redmine_account.text = detail.r2r_redmine_account
 		self._redmine_password.text = detail.r2r_redmine_password
@@ -32,6 +33,7 @@ function DeployClient.ReSharperRedmineJobDialog:ShowDetail(detail)
 		self._resharper_cache_path.text = ""
 		self._resharper_output_path.text = ""
 		self._resharper_sln_path.text = ""
+		self._resharper_dotsettings_path.text = ""
 		self._redmine_url.text = ""
 		self._redmine_account.text = ""
 		self._redmine_password.text = ""
@@ -47,6 +49,7 @@ function DeployClient.ReSharperRedmineJobDialog:GetDetail()
 	detail.r2r_resharper_cache_path = self._resharper_cache_path.text
 	detail.r2r_resharper_output_path = self._resharper_output_path.text
 	detail.r2r_resharper_sln_path = self._resharper_sln_path.text
+	detail.r2r_resharper_dotsettings_path = self._resharper_dotsettings_path.text
 	detail.r2r_redmine_url = self._redmine_url.text
 	detail.r2r_redmine_account = self._redmine_account.text
 	detail.r2r_redmine_password = self._redmine_password.text
@@ -80,5 +83,10 @@ function DeployClient.ReSharperRedmineJobDialog:HandleCurlBrowserClick(event)
 	self._curl_exe_path.text = DeployClient.g_FileRemoteSelectDialog:ShowSelect()
 end
 DeployClient.ReSharperRedmineJobDialog.HandleCurlBrowserClick = Lua.CoWrap(DeployClient.ReSharperRedmineJobDialog.HandleCurlBrowserClick)
+
+function DeployClient.ReSharperRedmineJobDialog:HandleDotSettingsBrowserClick(event)
+	self._resharper_dotsettings_path.text = DeployClient.g_FileRemoteSelectDialog:ShowSelect()
+end
+DeployClient.ReSharperRedmineJobDialog.HandleDotSettingsBrowserClick = Lua.CoWrap(DeployClient.ReSharperRedmineJobDialog.HandleDotSettingsBrowserClick)
 
 end

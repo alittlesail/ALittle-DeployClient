@@ -34,7 +34,6 @@ DeployClient.__Module_Setup = async function(layer_group, control, module_base_p
 	DeployClient.g_ScriptBasePath = script_base_path;
 	DeployClient.g_AUIPluinControl = await A_ModuleSystem.LoadPlugin("AUIPlugin");
 	DeployClient.g_DPLConfig = ALittle.CreateConfigSystem(DeployClient.g_ModuleBasePath + "/User.cfg");
-	await DeployClient.g_Control.HttpDownload(DeployClient.g_ModuleBasePath + "/Other/Server.cfg");
 	DeployClient.g_DPLServerConfig = ALittle.CreateConfigSystem(DeployClient.g_ModuleBasePath + "/Other/Server.cfg");
 	ALittle.Math_RandomSeed(ALittle.Time_GetCurTime());
 	ALittle.System_SetThreadCount(5);
@@ -48,8 +47,8 @@ DeployClient.__Module_Setup = async function(layer_group, control, module_base_p
 	DeployClient.g_LayerGroup.AddChild(DeployClient.g_DialogLayer);
 	await RequireFromPaths(script_base_path, "Utility/", ["FileRemoteSelectLayout.alittle", "FileRemoteSelectDialog.alittle"]);
 	await RequireFromPaths(script_base_path, "Dialog/", ["CommonJobDialog.alittle", "BatchJobDialog.alittle", "WaitProcessExitJobDialog.alittle"
-		, "SendVirtualKeyJobDialog.alittle", "KillProcessJobDialog.alittle", "DeepCopyJobDialog.alittle"
-		, "CreateProcessJobDialog.alittle", "CopyFileJobDialog.alittle"]);
+		, "SendVirtualKeyJobDialog.alittle", "ReSharperRedmineJobDialog.alittle", "KillProcessJobDialog.alittle"
+		, "DeepCopyJobDialog.alittle", "CreateProcessJobDialog.alittle", "CopyFileJobDialog.alittle"]);
 	await RequireFromPaths(script_base_path, "IDE/", ["DPLUITaskDetail.alittle", "DPLUITaskCenter.alittle", "DPLUIMainMenu.alittle"
 		, "DPLUICenter.alittle", "DPLUIAccount.alittle", "DPLCenter.alittle"]);
 	await DeployClient.g_DPLCenter.Setup();

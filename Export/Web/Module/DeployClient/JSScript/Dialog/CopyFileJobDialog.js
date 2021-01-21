@@ -25,6 +25,12 @@ DeployClient.CopyFileJobDialog = JavaScript.Class(DeployClient.CommonJobDialog, 
 		detail.copyfile_file = ALittle.String_SplitSepList(this._file_list.text, ["\r", "\n"]);
 		return detail;
 	},
+	HandleSrcBrowserClick : async function(event) {
+		this._src_dir.text = await DeployClient.g_FileRemoteSelectDialog.ShowSelect();
+	},
+	HandleDstBrowserClick : async function(event) {
+		this._dst_dir.text = await DeployClient.g_FileRemoteSelectDialog.ShowSelect();
+	},
 }, "DeployClient.CopyFileJobDialog");
 
 }

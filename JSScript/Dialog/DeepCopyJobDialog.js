@@ -25,6 +25,12 @@ DeployClient.DeepCopyJobDialog = JavaScript.Class(DeployClient.CommonJobDialog, 
 		detail.deepcopy_ext = this._ext.text;
 		return detail;
 	},
+	HandleSrcBrowserClick : async function(event) {
+		this._src_dir.text = await DeployClient.g_FileRemoteSelectDialog.ShowSelect();
+	},
+	HandleDstBrowserClick : async function(event) {
+		this._dst_dir.text = await DeployClient.g_FileRemoteSelectDialog.ShowSelect();
+	},
 }, "DeployClient.DeepCopyJobDialog");
 
 }
