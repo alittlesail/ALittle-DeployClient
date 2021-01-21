@@ -4,14 +4,17 @@ namespace DeployClient;
 public class ReSharperRedmineJobDialog : CommonJobDialog
 {
 	private ALittle.ImageInput _resharper_exe_path;
+    private ALittle.ImageInput _curl_exe_path;
     private ALittle.ImageInput _resharper_cache_path;
     private ALittle.ImageInput _resharper_output_path;
     private ALittle.ImageInput _resharper_sln_path;
 	private ALittle.ImageInput _redmine_url;
 	private ALittle.ImageInput _redmine_account;
 	private ALittle.ImageInput _redmine_password;
+    private ALittle.ImageInput _redmine_project_id;
+    private ALittle.ImageInput _redmine_account_id;
 
-    private get type() : int { return DeployServer.JobType.BATCH; }
+    private get type() : int { return DeployServer.JobType.RESHARPERREDMINE; }
 
     private fun ShowDetail(DeployServer.JobInfoDetail detail)
     {
@@ -24,6 +27,9 @@ public class ReSharperRedmineJobDialog : CommonJobDialog
             this._redmine_url.text = detail.r2r_redmine_url;
             this._redmine_account.text = detail.r2r_redmine_account;
             this._redmine_password.text = detail.r2r_redmine_password;
+            this._redmine_project_id.text = detail.r2r_redmine_project_id;
+            this._redmine_account_id.text = detail.r2r_redmine_account_id;
+            this._curl_exe_path.text = detail.r2r_curl_exe_path;
         }
         else
         {
@@ -34,6 +40,9 @@ public class ReSharperRedmineJobDialog : CommonJobDialog
             this._redmine_url.text = "";
             this._redmine_account.text = "";
             this._redmine_password.text = "";
+            this._redmine_project_id.text = "";
+            this._redmine_account_id.text = "";
+            this._curl_exe_path.text = "";
         }
     }
 
@@ -47,6 +56,9 @@ public class ReSharperRedmineJobDialog : CommonJobDialog
         detail.r2r_redmine_url = this._redmine_url.text;
         detail.r2r_redmine_account = this._redmine_account.text;
         detail.r2r_redmine_password = this._redmine_password.text;
+        detail.r2r_redmine_project_id = this._redmine_project_id.text;
+        detail.r2r_redmine_account_id = this._redmine_account_id.text;
+        detail.r2r_curl_exe_path = this._curl_exe_path.text;
         return detail;
     }
 
@@ -68,6 +80,11 @@ public class ReSharperRedmineJobDialog : CommonJobDialog
     private async fun HandleSlnBrowserClick(ALittle.UIClickEvent event)
     {
         this._resharper_sln_path.text = g_FileRemoteSelectDialog.ShowSelect();
+    }
+
+    private async fun HandleCurlBrowserClick(ALittle.UIClickEvent event)
+    {
+        this._curl_exe_path.text = g_FileRemoteSelectDialog.ShowSelect();
     }
 }
 

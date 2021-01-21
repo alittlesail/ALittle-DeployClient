@@ -12,7 +12,7 @@ assert(DeployClient.CommonJobDialog, " extends class:DeployClient.CommonJobDialo
 DeployClient.ReSharperRedmineJobDialog = Lua.Class(DeployClient.CommonJobDialog, "DeployClient.ReSharperRedmineJobDialog")
 
 function DeployClient.ReSharperRedmineJobDialog.__getter:type()
-	return 1
+	return 8
 end
 
 function DeployClient.ReSharperRedmineJobDialog:ShowDetail(detail)
@@ -24,6 +24,9 @@ function DeployClient.ReSharperRedmineJobDialog:ShowDetail(detail)
 		self._redmine_url.text = detail.r2r_redmine_url
 		self._redmine_account.text = detail.r2r_redmine_account
 		self._redmine_password.text = detail.r2r_redmine_password
+		self._redmine_project_id.text = detail.r2r_redmine_project_id
+		self._redmine_account_id.text = detail.r2r_redmine_account_id
+		self._curl_exe_path.text = detail.r2r_curl_exe_path
 	else
 		self._resharper_exe_path.text = ""
 		self._resharper_cache_path.text = ""
@@ -32,6 +35,9 @@ function DeployClient.ReSharperRedmineJobDialog:ShowDetail(detail)
 		self._redmine_url.text = ""
 		self._redmine_account.text = ""
 		self._redmine_password.text = ""
+		self._redmine_project_id.text = ""
+		self._redmine_account_id.text = ""
+		self._curl_exe_path.text = ""
 	end
 end
 
@@ -44,6 +50,9 @@ function DeployClient.ReSharperRedmineJobDialog:GetDetail()
 	detail.r2r_redmine_url = self._redmine_url.text
 	detail.r2r_redmine_account = self._redmine_account.text
 	detail.r2r_redmine_password = self._redmine_password.text
+	detail.r2r_redmine_project_id = self._redmine_project_id.text
+	detail.r2r_redmine_account_id = self._redmine_account_id.text
+	detail.r2r_curl_exe_path = self._curl_exe_path.text
 	return detail
 end
 
@@ -66,5 +75,10 @@ function DeployClient.ReSharperRedmineJobDialog:HandleSlnBrowserClick(event)
 	self._resharper_sln_path.text = DeployClient.g_FileRemoteSelectDialog:ShowSelect()
 end
 DeployClient.ReSharperRedmineJobDialog.HandleSlnBrowserClick = Lua.CoWrap(DeployClient.ReSharperRedmineJobDialog.HandleSlnBrowserClick)
+
+function DeployClient.ReSharperRedmineJobDialog:HandleCurlBrowserClick(event)
+	self._curl_exe_path.text = DeployClient.g_FileRemoteSelectDialog:ShowSelect()
+end
+DeployClient.ReSharperRedmineJobDialog.HandleCurlBrowserClick = Lua.CoWrap(DeployClient.ReSharperRedmineJobDialog.HandleCurlBrowserClick)
 
 end

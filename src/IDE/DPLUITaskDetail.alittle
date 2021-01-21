@@ -222,7 +222,7 @@ public class DPLUITaskDetail : ALittle.DisplayLayout
         elseif (job_item.info.job_type == DeployServer.JobType.KILLPROCESS)
         	job_item._button.text = "[杀死进程] "..job_item.info.job_name;
         elseif (job_item.info.job_type == DeployServer.JobType.RESHARPERREDMINE)
-        	job_item._button.text = "[代码检查] "..job_item.info.job_name;
+        	job_item._button.text = "[代码检查] "..job_item.info.job_name..":"..job_item.info.detail.r2r_resharper_sln_path;
 
         if (this._task_item.info.status == DeployServer.TaskStatus.IDLE)
             job_item._status.text = "";
