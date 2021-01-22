@@ -20,6 +20,21 @@ DeployClient.ReSharperRedmineJobDialog = JavaScript.Class(DeployClient.CommonJob
 			this._redmine_project_id.text = detail.r2r_redmine_project_id;
 			this._redmine_account_id.text = detail.r2r_redmine_account_id;
 			this._curl_exe_path.text = detail.r2r_curl_exe_path;
+			let list = [];
+			let ___OBJECT_1 = detail.r2r_redmine_account_map;
+			for (let account in ___OBJECT_1) {
+				let num = ___OBJECT_1[account];
+				if (num === undefined) continue;
+				ALittle.List_Push(list, num + ":" + account);
+			}
+			this._redmine_account_map.text = ALittle.String_Join(list, ";");
+			if (detail.r2r_code_tool === "svn") {
+				this._code_tool.text = "svn";
+			} else if (detail.r2r_code_tool === "git") {
+				this._code_tool.text = "git";
+			} else {
+				this._code_tool.text = "";
+			}
 		} else {
 			this._resharper_exe_path.text = "";
 			this._resharper_cache_path.text = "";
@@ -32,6 +47,8 @@ DeployClient.ReSharperRedmineJobDialog = JavaScript.Class(DeployClient.CommonJob
 			this._redmine_project_id.text = "";
 			this._redmine_account_id.text = "";
 			this._curl_exe_path.text = "";
+			this._redmine_account_map.text = "";
+			this._code_tool.text = "";
 		}
 	},
 	GetDetail : function() {
@@ -47,6 +64,27 @@ DeployClient.ReSharperRedmineJobDialog = JavaScript.Class(DeployClient.CommonJob
 		detail.r2r_redmine_project_id = this._redmine_project_id.text;
 		detail.r2r_redmine_account_id = this._redmine_account_id.text;
 		detail.r2r_curl_exe_path = this._curl_exe_path.text;
+		detail.r2r_redmine_account_map = {};
+		let list = ALittle.String_Split(this._redmine_account_map.text, ";");
+		let ___OBJECT_2 = list;
+		for (let index = 1; index <= ___OBJECT_2.length; ++index) {
+			let info = ___OBJECT_2[index - 1];
+			if (info === undefined) break;
+			let split_list = ALittle.String_Split(info, ":");
+			if (ALittle.List_Len(split_list) === 2) {
+				let num = ALittle.Math_ToInt(split_list[2 - 1]);
+				if (num !== undefined) {
+					detail.r2r_redmine_account_map[split_list[1 - 1]] = num;
+				}
+			}
+		}
+		if (this._code_tool.text === "svn") {
+			detail.r2r_code_tool = "svn";
+		} else if (this._code_tool.text === "git") {
+			detail.r2r_code_tool = "git";
+		} else {
+			detail.r2r_code_tool = "";
+		}
 		return detail;
 	},
 	HandleExeBrowserClick : async function(event) {
