@@ -120,7 +120,7 @@ public class DPLUITaskDetail : ALittle.DisplayLayout
         for (var index, child in this._job_list.childs)
         {
             var job_item = cast<JobItemInfo>(child._user_data);
-            job_item._status.text = "等待";
+            job_item._status.text = "-";
         }
     }
 
@@ -229,7 +229,7 @@ public class DPLUITaskDetail : ALittle.DisplayLayout
         else
         {
             if (job_item.info.status == DeployServer.JobStatus.WAITING)
-                job_item._status.text = "等待";
+                job_item._status.text = "-";
             elseif (job_item.info.status == DeployServer.JobStatus.DOING)
                 job_item._status.text = ALittle.Math_Floor(job_item.info.progress * 10000) / 100.."%";
             elseif (job_item.info.status == DeployServer.JobStatus.COMPLETED)

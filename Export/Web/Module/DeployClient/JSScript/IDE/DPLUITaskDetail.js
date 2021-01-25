@@ -207,7 +207,7 @@ DeployClient.DPLUITaskDetail = JavaScript.Class(ALittle.DisplayLayout, {
 			let child = ___OBJECT_3[index - 1];
 			if (child === undefined) break;
 			let job_item = child._user_data;
-			job_item._status.text = "等待";
+			job_item._status.text = "-";
 		}
 	},
 	HandleTaskSaveClick : async function(event) {
@@ -297,7 +297,7 @@ DeployClient.DPLUITaskDetail = JavaScript.Class(ALittle.DisplayLayout, {
 			job_item._status.text = "";
 		} else {
 			if (job_item.info.status === 0) {
-				job_item._status.text = "等待";
+				job_item._status.text = "-";
 			} else if (job_item.info.status === 1) {
 				job_item._status.text = ALittle.Math_Floor(job_item.info.progress * 10000) / 100 + "%";
 			} else if (job_item.info.status === 2) {
