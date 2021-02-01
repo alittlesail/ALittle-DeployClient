@@ -88,12 +88,16 @@ public class DPLUITaskDetail : ALittle.DisplayLayout
         this._job_list.SetChildIndex(this._job_list.GetChildByIndex(index), target_index);
     }
 
-    public fun RemoveBuildItem(int index)
+    public fun RemoveBuildItem(int create_time, int create_index)
     {
-        var build_info = this._task_item.info.build_list[index];
-        if (build_info == null) return;
-
-        this._build_list.SpliceChild(index, 1);
+        for (var index, build_info in this._task_item.info.build_list)
+        {
+            if (build_info.create_time == create_time && build_info.create_index == create_index)
+            {
+                this._build_list.SpliceChild(index, 1);
+                break;
+            }
+        }
     }
 
     private fun RefreshJobInfo()
@@ -272,7 +276,8 @@ public class DPLUITaskDetail : ALittle.DisplayLayout
 
         var msg = new DeployServer.QPreSeeBuild();
         msg.task_id = this._task_item.info.task_id;
-        msg.build_index = build_index;
+        msg.create_time = build_item.info.create_time;
+        msg.create_index = build_item.info.create_index;
         var sender = g_DPLCenter.CreateHttpSender();
         var error, rsp = DeployServer.HandlePreSeeBuild(sender, msg);
         if (error != null)
@@ -293,7 +298,8 @@ public class DPLUITaskDetail : ALittle.DisplayLayout
         
         var msg = new DeployServer.QDownloadBuild();
         msg.task_id = this._task_item.info.task_id;
-        msg.build_index = build_index;
+        msg.create_time = build_item.info.create_time;
+        msg.create_index = build_item.info.create_index;
 
         var sender = g_DPLCenter.CreateHttpFileSender(event.path.."/"..ALittle.Time_GetCurDate(build_item.info.create_time)..".log");
         var error = DeployServer.HandleDownloadBuild(sender, msg);
@@ -394,7 +400,8 @@ public class DPLUITaskDetail : ALittle.DisplayLayout
 
         var msg = new DeployServer.C2SDeleteBuild();
         msg.task_id = this._task_item.info.task_id;
-        msg.build_index = index;
+        msg.create_time = info.info.create_time;
+        msg.create_index = info.info.create_index;
         var error = DeployServer.HandleC2SDeleteBuild(msg_client, msg);
         if (error != null) g_AUITool.ShowNotice("提示", error);
     }

@@ -29,8 +29,8 @@ option_map = {}
 })
 ALittle.RegStruct(1811432266, "DeployServer.D_BuildInfo", {
 name = "DeployServer.D_BuildInfo", ns_name = "DeployServer", rl_name = "D_BuildInfo", hash_code = 1811432266,
-name_list = {"create_time"},
-type_list = {"int"},
+name_list = {"create_time","create_index"},
+type_list = {"int","int"},
 option_map = {}
 })
 ALittle.RegStruct(-1662612614, "DeployServer.NUpdateTaskInfo", {
@@ -173,8 +173,8 @@ option_map = {}
 })
 ALittle.RegStruct(-206375730, "DeployServer.NDeleteBuild", {
 name = "DeployServer.NDeleteBuild", ns_name = "DeployServer", rl_name = "NDeleteBuild", hash_code = -206375730,
-name_list = {"task_id","build_index"},
-type_list = {"int","int"},
+name_list = {"task_id","create_time","create_index"},
+type_list = {"int","int","int"},
 option_map = {}
 })
 ALittle.RegStruct(-173628832, "DeployServer.NModifyJob", {
@@ -428,15 +428,20 @@ function DeployClient.DPLUITaskCenter:MoveJobItem(task_id, job_index, target_ind
 	end
 end
 
-function DeployClient.DPLUITaskCenter:RemoveBuildItem(task_id, build_index)
+function DeployClient.DPLUITaskCenter:RemoveBuildItem(task_id, create_time, create_index)
 	local task_info = self._item_map[task_id]
 	if task_info == nil then
 		return
 	end
 	if task_info.detail ~= nil then
-		task_info.detail:RemoveBuildItem(build_index)
+		task_info.detail:RemoveBuildItem(create_time, create_index)
 	end
-	ALittle.List_Remove(task_info.info.build_list, build_index)
+	for index, build_info in ___ipairs(task_info.info.build_list) do
+		if build_info.create_time == create_time and build_info.create_index == create_index then
+			ALittle.List_Remove(task_info.info.build_list, index)
+			break
+		end
+	end
 end
 
 function DeployClient.DPLUITaskCenter:RemoveAllTaskItem()
@@ -554,7 +559,7 @@ end
 
 ALittle.RegMsgCallback(1487624699, DeployClient.HandleNCreateBuild)
 function DeployClient.HandleNDeleteBuild(sender, msg)
-	DeployClient.g_DPLCenter.center.task_center:RemoveBuildItem(msg.task_id, msg.build_index)
+	DeployClient.g_DPLCenter.center.task_center:RemoveBuildItem(msg.task_id, msg.create_time, msg.create_index)
 end
 
 ALittle.RegMsgCallback(-206375730, DeployClient.HandleNDeleteBuild)

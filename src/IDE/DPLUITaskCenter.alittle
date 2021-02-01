@@ -239,13 +239,20 @@ public class DPLUITaskCenter : ALittle.DisplayLayout
         	ALittle.List_Insert(task_info.info.job_list, target_index, job);
     }
 
-    public fun RemoveBuildItem(int task_id, int build_index)
+    public fun RemoveBuildItem(int task_id, int create_time, int create_index)
     {
         var task_info = this._item_map[task_id];
         if (task_info == null) return;
 
-        if (task_info.detail != null) task_info.detail.RemoveBuildItem(build_index);
-        ALittle.List_Remove(task_info.info.build_list, build_index);
+        if (task_info.detail != null) task_info.detail.RemoveBuildItem(create_time, create_index);
+        for (var index, build_info in task_info.info.build_list)
+        {
+            if (build_info.create_time == create_time && build_info.create_index == create_index)
+            {
+                ALittle.List_Remove(task_info.info.build_list, index);
+                break;
+            }
+        }
     }
 
     public fun RemoveAllTaskItem()
@@ -373,5 +380,5 @@ public static HandleNCreateBuild(ALittle.IMsgCommon sender, DeployServer.NCreate
 [Msg]
 public static HandleNDeleteBuild(ALittle.IMsgCommon sender, DeployServer.NDeleteBuild msg)
 {
-    g_DPLCenter.center.task_center.RemoveBuildItem(msg.task_id, msg.build_index);
+    g_DPLCenter.center.task_center.RemoveBuildItem(msg.task_id, msg.create_time, msg.create_index);
 }

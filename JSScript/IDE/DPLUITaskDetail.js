@@ -28,8 +28,8 @@ option_map : {}
 })
 ALittle.RegStruct(1811432266, "DeployServer.D_BuildInfo", {
 name : "DeployServer.D_BuildInfo", ns_name : "DeployServer", rl_name : "D_BuildInfo", hash_code : 1811432266,
-name_list : ["create_time"],
-type_list : ["int"],
+name_list : ["create_time","create_index"],
+type_list : ["int","int"],
 option_map : {}
 })
 ALittle.RegStruct(1809409109, "DeployServer.S2CDeleteJob", {
@@ -76,8 +76,8 @@ option_map : {}
 })
 ALittle.RegStruct(1254025721, "DeployServer.C2SDeleteBuild", {
 name : "DeployServer.C2SDeleteBuild", ns_name : "DeployServer", rl_name : "C2SDeleteBuild", hash_code : 1254025721,
-name_list : ["task_id","build_index"],
-type_list : ["int","int"],
+name_list : ["task_id","create_time","create_index"],
+type_list : ["int","int","int"],
 option_map : {}
 })
 ALittle.RegStruct(1232578034, "DeployServer.JobInfoDetail", {
@@ -173,27 +173,31 @@ DeployClient.DPLUITaskDetail = JavaScript.Class(ALittle.DisplayLayout, {
 		}
 		this._job_list.SetChildIndex(this._job_list.GetChildByIndex(index), target_index);
 	},
-	RemoveBuildItem : function(index) {
-		let build_info = this._task_item.info.build_list[index - 1];
-		if (build_info === undefined) {
-			return;
+	RemoveBuildItem : function(create_time, create_index) {
+		let ___OBJECT_1 = this._task_item.info.build_list;
+		for (let index = 1; index <= ___OBJECT_1.length; ++index) {
+			let build_info = ___OBJECT_1[index - 1];
+			if (build_info === undefined) break;
+			if (build_info.create_time === create_time && build_info.create_index === create_index) {
+				this._build_list.SpliceChild(index, 1);
+				break;
+			}
 		}
-		this._build_list.SpliceChild(index, 1);
 	},
 	RefreshJobInfo : function() {
 		this._job_list.RemoveAllChild();
-		let ___OBJECT_1 = this._task_item.info.job_list;
-		for (let index = 1; index <= ___OBJECT_1.length; ++index) {
-			let job_info = ___OBJECT_1[index - 1];
+		let ___OBJECT_2 = this._task_item.info.job_list;
+		for (let index = 1; index <= ___OBJECT_2.length; ++index) {
+			let job_info = ___OBJECT_2[index - 1];
 			if (job_info === undefined) break;
 			this.AddJobItem(undefined, job_info);
 		}
 	},
 	RefreshBuildInfo : function() {
 		this._build_list.RemoveAllChild();
-		let ___OBJECT_2 = this._task_item.info.build_list;
-		for (let index = 1; index <= ___OBJECT_2.length; ++index) {
-			let build_info = ___OBJECT_2[index - 1];
+		let ___OBJECT_3 = this._task_item.info.build_list;
+		for (let index = 1; index <= ___OBJECT_3.length; ++index) {
+			let build_info = ___OBJECT_3[index - 1];
 			if (build_info === undefined) break;
 			this.AddBuildItem(build_info);
 		}
@@ -202,9 +206,9 @@ DeployClient.DPLUITaskDetail = JavaScript.Class(ALittle.DisplayLayout, {
 		this._save_button.disabled = false;
 	},
 	HandleTaskStart : function() {
-		let ___OBJECT_3 = this._job_list.childs;
-		for (let index = 1; index <= ___OBJECT_3.length; ++index) {
-			let child = ___OBJECT_3[index - 1];
+		let ___OBJECT_4 = this._job_list.childs;
+		for (let index = 1; index <= ___OBJECT_4.length; ++index) {
+			let child = ___OBJECT_4[index - 1];
 			if (child === undefined) break;
 			let job_item = child._user_data;
 			job_item._status.text = "-";
@@ -331,7 +335,8 @@ DeployClient.DPLUITaskDetail = JavaScript.Class(ALittle.DisplayLayout, {
 		DeployClient.g_DPLCenter.center.task_center._build_edit.text = "";
 		let msg = {};
 		msg.task_id = this._task_item.info.task_id;
-		msg.build_index = build_index;
+		msg.create_time = build_item.info.create_time;
+		msg.create_index = build_item.info.create_index;
 		let sender = DeployClient.g_DPLCenter.CreateHttpSender();
 		let [error, rsp] = await ALittle.IHttpSender.Invoke("DeployServer.QPreSeeBuild", sender, msg);
 		if (error !== undefined) {
@@ -348,7 +353,8 @@ DeployClient.DPLUITaskDetail = JavaScript.Class(ALittle.DisplayLayout, {
 		let build_index = this._build_list.GetChildIndex(build_item.item);
 		let msg = {};
 		msg.task_id = this._task_item.info.task_id;
-		msg.build_index = build_index;
+		msg.create_time = build_item.info.create_time;
+		msg.create_index = build_item.info.create_index;
 		let sender = DeployClient.g_DPLCenter.CreateHttpFileSender(event.path + "/" + ALittle.Time_GetCurDate(build_item.info.create_time) + ".log");
 		let [error] = await ALittle.IHttpFileSender.InvokeDownload("DeployServer.QDownloadBuild", sender, msg);
 		if (error !== undefined) {
@@ -438,7 +444,8 @@ DeployClient.DPLUITaskDetail = JavaScript.Class(ALittle.DisplayLayout, {
 		}
 		let msg = {};
 		msg.task_id = this._task_item.info.task_id;
-		msg.build_index = index;
+		msg.create_time = info.info.create_time;
+		msg.create_index = info.info.create_index;
 		let [error] = await ALittle.IMsgCommon.InvokeRPC(1254025721, msg_client, msg);
 		if (error !== undefined) {
 			g_AUITool.ShowNotice("提示", error);

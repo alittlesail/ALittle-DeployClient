@@ -35,8 +35,8 @@ option_map = {}
 })
 ALittle.RegStruct(1811432266, "DeployServer.D_BuildInfo", {
 name = "DeployServer.D_BuildInfo", ns_name = "DeployServer", rl_name = "D_BuildInfo", hash_code = 1811432266,
-name_list = {"create_time"},
-type_list = {"int"},
+name_list = {"create_time","create_index"},
+type_list = {"int","int"},
 option_map = {}
 })
 ALittle.RegStruct(1809409109, "DeployServer.S2CDeleteJob", {
@@ -83,8 +83,8 @@ option_map = {}
 })
 ALittle.RegStruct(1254025721, "DeployServer.C2SDeleteBuild", {
 name = "DeployServer.C2SDeleteBuild", ns_name = "DeployServer", rl_name = "C2SDeleteBuild", hash_code = 1254025721,
-name_list = {"task_id","build_index"},
-type_list = {"int","int"},
+name_list = {"task_id","create_time","create_index"},
+type_list = {"int","int","int"},
 option_map = {}
 })
 ALittle.RegStruct(1232578034, "DeployServer.JobInfoDetail", {
@@ -189,12 +189,13 @@ function DeployClient.DPLUITaskDetail:MoveJobItem(index, target_index)
 	self._job_list:SetChildIndex(self._job_list:GetChildByIndex(index), target_index)
 end
 
-function DeployClient.DPLUITaskDetail:RemoveBuildItem(index)
-	local build_info = self._task_item.info.build_list[index]
-	if build_info == nil then
-		return
+function DeployClient.DPLUITaskDetail:RemoveBuildItem(create_time, create_index)
+	for index, build_info in ___ipairs(self._task_item.info.build_list) do
+		if build_info.create_time == create_time and build_info.create_index == create_index then
+			self._build_list:SpliceChild(index, 1)
+			break
+		end
 	end
-	self._build_list:SpliceChild(index, 1)
 end
 
 function DeployClient.DPLUITaskDetail:RefreshJobInfo()
@@ -218,7 +219,7 @@ end
 function DeployClient.DPLUITaskDetail:HandleTaskStart()
 	for index, child in ___ipairs(self._job_list.childs) do
 		local job_item = child._user_data
-		job_item._status.text = "等待"
+		job_item._status.text = "-"
 	end
 end
 
@@ -316,7 +317,7 @@ function DeployClient.DPLUITaskDetail:RefreshJobItem(job_item)
 		job_item._status.text = ""
 	else
 		if job_item.info.status == 0 then
-			job_item._status.text = "等待"
+			job_item._status.text = "-"
 		elseif job_item.info.status == 1 then
 			job_item._status.text = ALittle.Math_Floor(job_item.info.progress * 10000) / 100 .. "%"
 		elseif job_item.info.status == 2 then
@@ -353,7 +354,8 @@ function DeployClient.DPLUITaskDetail:HandlePreSeeBuild(event)
 	DeployClient.g_DPLCenter.center.task_center._build_edit.text = ""
 	local msg = {}
 	msg.task_id = self._task_item.info.task_id
-	msg.build_index = build_index
+	msg.create_time = build_item.info.create_time
+	msg.create_index = build_item.info.create_index
 	local sender = DeployClient.g_DPLCenter:CreateHttpSender()
 	local error, rsp = ALittle.IHttpSender.Invoke("DeployServer.QPreSeeBuild", sender, msg)
 	if error ~= nil then
@@ -372,7 +374,8 @@ function DeployClient.DPLUITaskDetail:HandleDownloadBuild(event)
 	local build_index = self._build_list:GetChildIndex(build_item.item)
 	local msg = {}
 	msg.task_id = self._task_item.info.task_id
-	msg.build_index = build_index
+	msg.create_time = build_item.info.create_time
+	msg.create_index = build_item.info.create_index
 	local sender = DeployClient.g_DPLCenter:CreateHttpFileSender(event.path .. "/" .. ALittle.Time_GetCurDate(build_item.info.create_time) .. ".log")
 	local error = ALittle.IHttpFileSender.InvokeDownload("DeployServer.QDownloadBuild", sender, msg)
 	if error ~= nil then
@@ -471,7 +474,8 @@ function DeployClient.DPLUITaskDetail:HandleDeleteBuild(info, index)
 	end
 	local msg = {}
 	msg.task_id = self._task_item.info.task_id
-	msg.build_index = index
+	msg.create_time = info.info.create_time
+	msg.create_index = info.info.create_index
 	local error = ALittle.IMsgCommon.InvokeRPC(1254025721, msg_client, msg)
 	if error ~= nil then
 		g_AUITool:ShowNotice("提示", error)
