@@ -246,15 +246,19 @@ end
 DeployClient.DPLUITaskDetail.HandleTaskSaveClick = Lua.CoWrap(DeployClient.DPLUITaskDetail.HandleTaskSaveClick)
 
 function DeployClient.DPLUITaskDetail:HandleNewJobClick(event)
+	self:ShowCreateMenu(nil)
+end
+
+function DeployClient.DPLUITaskDetail:ShowCreateMenu(job_index)
 	local menu = AUIPlugin.AUIRightMenu()
-	menu:AddItem("批处理", Lua.Bind(self.HandleNewCommonJob, self, "batch_job_dialog"))
-	menu:AddItem("复制目录", Lua.Bind(self.HandleNewCommonJob, self, "deepcopy_job_dialog"))
-	menu:AddItem("复制文件", Lua.Bind(self.HandleNewCommonJob, self, "copyfile_job_dialog"))
-	menu:AddItem("发送命令", Lua.Bind(self.HandleNewCommonJob, self, "sendvirtualkey_job_dialog"))
-	menu:AddItem("等待进程退出", Lua.Bind(self.HandleNewCommonJob, self, "waitprocessexit_job_dialog"))
-	menu:AddItem("创建进程", Lua.Bind(self.HandleNewCommonJob, self, "createprocess_job_dialog"))
-	menu:AddItem("杀死进程", Lua.Bind(self.HandleNewCommonJob, self, "killprocess_job_dialog"))
-	menu:AddItem("代码检查", Lua.Bind(self.HandleNewCommonJob, self, "resharper_redmine_job_dialog"))
+	menu:AddItem("批处理", Lua.Bind(self.HandleNewCommonJob, self, "batch_job_dialog", job_index))
+	menu:AddItem("复制目录", Lua.Bind(self.HandleNewCommonJob, self, "deepcopy_job_dialog", job_index))
+	menu:AddItem("复制文件", Lua.Bind(self.HandleNewCommonJob, self, "copyfile_job_dialog", job_index))
+	menu:AddItem("发送命令", Lua.Bind(self.HandleNewCommonJob, self, "sendvirtualkey_job_dialog", job_index))
+	menu:AddItem("等待进程退出", Lua.Bind(self.HandleNewCommonJob, self, "waitprocessexit_job_dialog", job_index))
+	menu:AddItem("创建进程", Lua.Bind(self.HandleNewCommonJob, self, "createprocess_job_dialog", job_index))
+	menu:AddItem("杀死进程", Lua.Bind(self.HandleNewCommonJob, self, "killprocess_job_dialog", job_index))
+	menu:AddItem("代码检查", Lua.Bind(self.HandleNewCommonJob, self, "resharper_redmine_job_dialog", job_index))
 	menu:Show()
 end
 
@@ -262,9 +266,9 @@ function DeployClient.DPLUITaskDetail:HandleStartTaskClick(event)
 	DeployClient.g_DPLCenter.center.task_center:HandleStartTask(self._task_item)
 end
 
-function DeployClient.DPLUITaskDetail:HandleNewCommonJob(ui)
+function DeployClient.DPLUITaskDetail:HandleNewCommonJob(ui, job_index)
 	local dialog = DeployClient.g_Control:CreateControl(ui)
-	dialog:Show(self._task_item.info.task_id, nil, nil)
+	dialog:Show(self._task_item.info.task_id, job_index, nil)
 end
 
 function DeployClient.DPLUITaskDetail:AddJobItem(job_index, job_info)
@@ -336,6 +340,7 @@ function DeployClient.DPLUITaskDetail:HandleJobRButtonDown(event)
 	menu:AddItem("上移", Lua.Bind(self.HandleMoveJob, self, job_item, job_index, job_index - 1))
 	menu:AddItem("下移", Lua.Bind(self.HandleMoveJob, self, job_item, job_index, job_index + 1))
 	menu:AddItem("复制", Lua.Bind(self.HandleCopyJob, self, job_item, job_index))
+	menu:AddItem("新建", Lua.Bind(self.ShowCreateMenu, self, job_index + 1))
 	menu:AddItem("删除", Lua.Bind(self.HandleDeleteJob, self, job_item, job_index))
 	menu:Show()
 end

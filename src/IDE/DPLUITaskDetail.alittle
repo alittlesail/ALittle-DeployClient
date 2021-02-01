@@ -154,15 +154,20 @@ public class DPLUITaskDetail : ALittle.DisplayLayout
 
     private fun HandleNewJobClick(ALittle.UIClickEvent event)
     {
+        this.ShowCreateMenu(null);
+    }
+
+    public fun ShowCreateMenu(int job_index)
+    {
         var menu = new AUIPlugin.AUIRightMenu();
-        menu.AddItem("批处理", bind(this.HandleNewCommonJob, this, "batch_job_dialog"));
-        menu.AddItem("复制目录", bind(this.HandleNewCommonJob, this, "deepcopy_job_dialog"));
-        menu.AddItem("复制文件", bind(this.HandleNewCommonJob, this, "copyfile_job_dialog"));
-        menu.AddItem("发送命令", bind(this.HandleNewCommonJob, this, "sendvirtualkey_job_dialog"));
-        menu.AddItem("等待进程退出", bind(this.HandleNewCommonJob, this, "waitprocessexit_job_dialog"));
-        menu.AddItem("创建进程", bind(this.HandleNewCommonJob, this, "createprocess_job_dialog"));
-        menu.AddItem("杀死进程", bind(this.HandleNewCommonJob, this, "killprocess_job_dialog"));
-        menu.AddItem("代码检查", bind(this.HandleNewCommonJob, this, "resharper_redmine_job_dialog"));
+        menu.AddItem("批处理", bind(this.HandleNewCommonJob, this, "batch_job_dialog", job_index));
+        menu.AddItem("复制目录", bind(this.HandleNewCommonJob, this, "deepcopy_job_dialog", job_index));
+        menu.AddItem("复制文件", bind(this.HandleNewCommonJob, this, "copyfile_job_dialog", job_index));
+        menu.AddItem("发送命令", bind(this.HandleNewCommonJob, this, "sendvirtualkey_job_dialog", job_index));
+        menu.AddItem("等待进程退出", bind(this.HandleNewCommonJob, this, "waitprocessexit_job_dialog", job_index));
+        menu.AddItem("创建进程", bind(this.HandleNewCommonJob, this, "createprocess_job_dialog", job_index));
+        menu.AddItem("杀死进程", bind(this.HandleNewCommonJob, this, "killprocess_job_dialog", job_index));
+        menu.AddItem("代码检查", bind(this.HandleNewCommonJob, this, "resharper_redmine_job_dialog", job_index));
         menu.Show();
     }
 
@@ -171,10 +176,10 @@ public class DPLUITaskDetail : ALittle.DisplayLayout
         g_DPLCenter.center.task_center.HandleStartTask(this._task_item);
     }
 
-    private fun HandleNewCommonJob(string ui)
+    private fun HandleNewCommonJob(string ui, int job_index)
     {
         var dialog = g_Control.CreateControl{CommonJobDialog}(ui);
-        dialog.Show(this._task_item.info.task_id, null, null);
+        dialog.Show(this._task_item.info.task_id, job_index, null);
     }
 
     public fun AddJobItem(int job_index, DeployServer.D_JobInfo job_info)
@@ -253,6 +258,7 @@ public class DPLUITaskDetail : ALittle.DisplayLayout
         menu.AddItem("上移", bind(this.HandleMoveJob, this, job_item, job_index, job_index - 1));
         menu.AddItem("下移", bind(this.HandleMoveJob, this, job_item, job_index, job_index + 1));
         menu.AddItem("复制", bind(this.HandleCopyJob, this, job_item, job_index));
+        menu.AddItem("新建", bind(this.ShowCreateMenu, this, job_index + 1));
         menu.AddItem("删除", bind(this.HandleDeleteJob, this, job_item, job_index));
         menu.Show();
     }
