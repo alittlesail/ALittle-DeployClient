@@ -342,9 +342,8 @@ end
 
 function DeployClient.DPLUITaskDetail:HandleBuildRButtonDown(event)
 	local build_item = event.target._user_data
-	local build_index = self._build_list:GetChildIndex(build_item.item)
 	local menu = AUIPlugin.AUIRightMenu()
-	menu:AddItem("删除", Lua.Bind(self.HandleDeleteBuild, self, build_item, build_index))
+	menu:AddItem("删除", Lua.Bind(self.HandleDeleteBuild, self, build_item))
 	menu:Show()
 end
 
@@ -462,7 +461,7 @@ function DeployClient.DPLUITaskDetail:HandleDeleteJob(info, index)
 end
 DeployClient.DPLUITaskDetail.HandleDeleteJob = Lua.CoWrap(DeployClient.DPLUITaskDetail.HandleDeleteJob)
 
-function DeployClient.DPLUITaskDetail:HandleDeleteBuild(info, index)
+function DeployClient.DPLUITaskDetail:HandleDeleteBuild(info)
 	local msg_client = DeployClient.g_DPLWebLoginManager.msg_client
 	if msg_client == nil or not msg_client:IsConnected() then
 		g_AUITool:ShowNotice("提示", "当前还未连接成功!")

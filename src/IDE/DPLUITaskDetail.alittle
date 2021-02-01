@@ -260,10 +260,9 @@ public class DPLUITaskDetail : ALittle.DisplayLayout
     private fun HandleBuildRButtonDown(ALittle.UIRButtonDownEvent event)
     {
         var build_item = cast<BuildItemInfo>(event.target._user_data);
-        var build_index = this._build_list.GetChildIndex(build_item.item);
-
+        
         var menu = new AUIPlugin.AUIRightMenu();
-        menu.AddItem("删除", bind(this.HandleDeleteBuild, this, build_item, build_index));
+        menu.AddItem("删除", bind(this.HandleDeleteBuild, this, build_item));
         menu.Show();
     }
 
@@ -386,7 +385,7 @@ public class DPLUITaskDetail : ALittle.DisplayLayout
         if (error != null) g_AUITool.ShowNotice("提示", error);
     }
 
-    private async fun HandleDeleteBuild(BuildItemInfo info, int index)
+    private async fun HandleDeleteBuild(BuildItemInfo info)
     {
         var msg_client = g_DPLWebLoginManager.msg_client;
         if (msg_client == null || !msg_client.IsConnected())

@@ -324,9 +324,8 @@ DeployClient.DPLUITaskDetail = JavaScript.Class(ALittle.DisplayLayout, {
 	},
 	HandleBuildRButtonDown : function(event) {
 		let build_item = event.target._user_data;
-		let build_index = this._build_list.GetChildIndex(build_item.item);
 		let menu = ALittle.NewObject(AUIPlugin.AUIRightMenu);
-		menu.AddItem("删除", this.HandleDeleteBuild.bind(this, build_item, build_index));
+		menu.AddItem("删除", this.HandleDeleteBuild.bind(this, build_item));
 		menu.Show();
 	},
 	HandlePreSeeBuild : async function(event) {
@@ -432,7 +431,7 @@ DeployClient.DPLUITaskDetail = JavaScript.Class(ALittle.DisplayLayout, {
 			g_AUITool.ShowNotice("提示", error);
 		}
 	},
-	HandleDeleteBuild : async function(info, index) {
+	HandleDeleteBuild : async function(info) {
 		let msg_client = DeployClient.g_DPLWebLoginManager.msg_client;
 		if (msg_client === undefined || !msg_client.IsConnected()) {
 			g_AUITool.ShowNotice("提示", "当前还未连接成功!");
