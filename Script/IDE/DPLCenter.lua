@@ -15,20 +15,19 @@ function DeployClient.DPLCenter:Setup()
 	DeployClient.g_Control:CreateControl("dpl_main_scene", self, DeployClient.g_MainLayer)
 	A_UISystem.keydown_callback = Lua.Bind(self.HandleShortcutKey, self)
 	A_UISystem.quit_callback = Lua.Bind(self.HandleQuit, self)
+	self._main_menu:TryShowSettingDialog()
 end
 
 function DeployClient.DPLCenter:CreateHttpFileSender(file_path)
-	local default_ip = ""
-	local http_ip = DeployClient.g_DPLServerConfig:GetConfig("http_ip", default_ip)
-	local http_port = DeployClient.g_DPLServerConfig:GetConfig("http_port", 1800)
-	return ALittle.CreateHttpFileSender(http_ip, http_port, file_path, 0)
+	local http_ip = ""
+	http_ip = DeployClient.g_DPLConfig:GetString("setting_ip", "")
+	return ALittle.CreateHttpFileSender(http_ip, 1800, file_path, 0)
 end
 
 function DeployClient.DPLCenter:CreateHttpSender()
-	local default_ip = ""
-	local http_ip = DeployClient.g_DPLServerConfig:GetConfig("http_ip", default_ip)
-	local http_port = DeployClient.g_DPLServerConfig:GetConfig("http_port", 1800)
-	return ALittle.CreateHttpSender(http_ip, http_port)
+	local http_ip = ""
+	http_ip = DeployClient.g_DPLConfig:GetString("setting_ip", "")
+	return ALittle.CreateHttpSender(http_ip, 1800)
 end
 
 function DeployClient.DPLCenter:Shutdown()

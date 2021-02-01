@@ -8,22 +8,19 @@ DeployClient.DPLCenter = JavaScript.Class(undefined, {
 			DeployClient.g_Control.CreateControl("dpl_main_scene", this, DeployClient.g_MainLayer);
 			A_UISystem.keydown_callback = this.HandleShortcutKey.bind(this);
 			A_UISystem.quit_callback = this.HandleQuit.bind(this);
+			this._main_menu.TryShowSettingDialog();
 			___COROUTINE();
 		}).bind(this));
 	},
 	CreateHttpFileSender : function(file_path) {
-		let default_ip = "";
-		default_ip = DeployClient.g_Control.host;
-		let http_ip = DeployClient.g_DPLServerConfig.GetConfig("http_ip", default_ip);
-		let http_port = DeployClient.g_DPLServerConfig.GetConfig("http_port", 1800);
-		return ALittle.CreateHttpFileSender(http_ip, http_port, file_path, 0);
+		let http_ip = "";
+		http_ip = DeployClient.g_Control.host;
+		return ALittle.CreateHttpFileSender(http_ip, 1800, file_path, 0);
 	},
 	CreateHttpSender : function() {
-		let default_ip = "";
-		default_ip = DeployClient.g_Control.host;
-		let http_ip = DeployClient.g_DPLServerConfig.GetConfig("http_ip", default_ip);
-		let http_port = DeployClient.g_DPLServerConfig.GetConfig("http_port", 1800);
-		return ALittle.CreateHttpSender(http_ip, http_port);
+		let http_ip = "";
+		http_ip = DeployClient.g_Control.host;
+		return ALittle.CreateHttpSender(http_ip, 1800);
 	},
 	Shutdown : function() {
 		if (this._account !== undefined) {

@@ -12,18 +12,17 @@ protected class DPLUIAccount : ALittle.DisplayLayout
 
 	public fun TCtor()
 	{
-        var default_ip = "";
+        var client_ip = "";
         [Language(JavaScript)]
-        default_ip = g_Control.host;
+        client_ip = g_Control.host;
+        [Language(Lua)]
+        client_ip = g_DPLConfig.GetString("setting_ip", "");
 
-		var client_ip = g_DPLServerConfig.GetConfig("client_ip", default_ip);
-		var client_port = g_DPLServerConfig.GetConfig("client_port", 1801);
-		
 		g_DPLWebLoginManager = new AUIPlugin.AUIWebLoginManager();
 		g_DPLWebLoginManager.AddEventListener(this, this.HandleAccountInReconnect);
 		g_DPLWebLoginManager.AddEventListener(this, this.HandleAccountInLogout);
 		g_DPLWebLoginManager.AddEventListener(this, this.HandleAccountInLogin);
-		g_DPLWebLoginManager.Setup(client_ip, client_port, false, g_DPLConfig);
+		g_DPLWebLoginManager.Setup(client_ip, 1801, false, g_DPLConfig);
 	}
 	
 	public fun Shutdown()

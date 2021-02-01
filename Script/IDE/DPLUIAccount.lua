@@ -38,14 +38,13 @@ assert(ALittle.DisplayLayout, " extends class:ALittle.DisplayLayout is nil")
 DeployClient.DPLUIAccount = Lua.Class(ALittle.DisplayLayout, "DeployClient.DPLUIAccount")
 
 function DeployClient.DPLUIAccount:TCtor()
-	local default_ip = ""
-	local client_ip = DeployClient.g_DPLServerConfig:GetConfig("client_ip", default_ip)
-	local client_port = DeployClient.g_DPLServerConfig:GetConfig("client_port", 1801)
+	local client_ip = ""
+	client_ip = DeployClient.g_DPLConfig:GetString("setting_ip", "")
 	DeployClient.g_DPLWebLoginManager = AUIPlugin.AUIWebLoginManager()
 	DeployClient.g_DPLWebLoginManager:AddEventListener(___all_struct[-262794256], self, self.HandleAccountInReconnect)
 	DeployClient.g_DPLWebLoginManager:AddEventListener(___all_struct[-1848509213], self, self.HandleAccountInLogout)
 	DeployClient.g_DPLWebLoginManager:AddEventListener(___all_struct[-420010531], self, self.HandleAccountInLogin)
-	DeployClient.g_DPLWebLoginManager:Setup(client_ip, client_port, false, DeployClient.g_DPLConfig)
+	DeployClient.g_DPLWebLoginManager:Setup(client_ip, 1801, false, DeployClient.g_DPLConfig)
 end
 
 function DeployClient.DPLUIAccount:Shutdown()

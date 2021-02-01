@@ -12,9 +12,7 @@ DeployClient.DPLUIMainMenu = JavaScript.Class(ALittle.Linear, {
 			if (child === undefined) break;
 			child.group = group;
 		}
-		let version_ip = DeployClient.g_DPLServerConfig.GetConfig("version_ip", "www.alittleide.com");
-		let version_port = DeployClient.g_DPLServerConfig.GetConfig("version_port", 1100);
-		this._version_manager = ALittle.NewObject(AUIPlugin.AUIVersionManager, version_ip, version_port, "alittle", "ALittleDeploy");
+		this._version_manager = ALittle.NewObject(AUIPlugin.AUIVersionManager, "www.alittleide.com", 1100, "alittle", "ALittleDeploy");
 	},
 	Shutdown : function() {
 	},
@@ -24,6 +22,31 @@ DeployClient.DPLUIMainMenu = JavaScript.Class(ALittle.Linear, {
 	HandleHelpMenuClick : function(event) {
 		let menu = ALittle.NewObject(AUIPlugin.AUIRightMenu);
 		menu.Show(event.target, this.HandleMenuHide.bind(this, event.target));
+	},
+	HandleSettingMenuClick : function(event) {
+	},
+	TryShowSettingDialog : function() {
+	},
+	ShowSettingDialog : function() {
+		if (this._setting_dialog === undefined) {
+			this._setting_dialog = DeployClient.g_Control.CreateControl("setting_dialog", this);
+			A_LayerManager.AddToModal(this._setting_dialog);
+			this._setting_ip.text = DeployClient.g_DPLConfig.GetString("setting_ip", "");
+		}
+		this._setting_dialog.visible = true;
+	},
+	HandleSettingComfirmClick : function(event) {
+		this._setting_dialog.visible = false;
+		let ip = this._setting_ip.text;
+		if (DeployClient.g_DPLConfig.GetString("setting_ip", "") === ip) {
+			return;
+		}
+		DeployClient.g_DPLConfig.SetConfig("setting_ip", ip);
+		DeployClient.g_DPLWebLoginManager.Shutdown();
+		DeployClient.g_DPLWebLoginManager.Setup(ip, 1801, false, DeployClient.g_DPLConfig);
+	},
+	HandleSettingCancelClick : function(event) {
+		this._setting_dialog.visible = false;
 	},
 }, "DeployClient.DPLUIMainMenu");
 

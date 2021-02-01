@@ -23,7 +23,6 @@ DeployClient.g_ModuleBasePath = undefined;
 DeployClient.g_ScriptBasePath = undefined;
 DeployClient.g_ModuleBasePathEx = undefined;
 DeployClient.g_DPLConfig = undefined;
-DeployClient.g_DPLServerConfig = undefined;
 DeployClient.g_MainLayer = undefined;
 DeployClient.g_DialogLayer = undefined;
 DeployClient.__Module_Setup = async function(layer_group, control, module_base_path, script_base_path) {
@@ -34,7 +33,6 @@ DeployClient.__Module_Setup = async function(layer_group, control, module_base_p
 	DeployClient.g_ScriptBasePath = script_base_path;
 	DeployClient.g_AUIPluinControl = await A_ModuleSystem.LoadPlugin("AUIPlugin");
 	DeployClient.g_DPLConfig = ALittle.CreateConfigSystem(DeployClient.g_ModuleBasePath + "/User.cfg");
-	DeployClient.g_DPLServerConfig = ALittle.CreateConfigSystem(DeployClient.g_ModuleBasePath + "/Other/Server.cfg");
 	ALittle.Math_RandomSeed(ALittle.Time_GetCurTime());
 	ALittle.System_SetThreadCount(5);
 	DeployClient.g_MainLayer = ALittle.NewObject(ALittle.DisplayLayout, DeployClient.g_Control);

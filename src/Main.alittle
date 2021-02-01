@@ -37,7 +37,6 @@ protected var g_ScriptBasePath:string;
 protected var g_ModuleBasePathEx:string;
 
 protected var g_DPLConfig:ALittle.IJsonConfig;
-protected var g_DPLServerConfig:ALittle.IJsonConfig;
 
 protected var g_MainLayer:ALittle.DisplayLayout;
 protected var g_DialogLayer:ALittle.DisplayLayout;
@@ -58,9 +57,6 @@ public async static __Module_Setup(ALittle.DisplayLayout layer_group, ALittle.Co
     
     // 获取配置信息
 	g_DPLConfig = ALittle.CreateConfigSystem(g_ModuleBasePath.."/User.cfg");
-
-	// 获取配置信息
-	g_DPLServerConfig = ALittle.CreateConfigSystem(g_ModuleBasePath.."/Other/Server.cfg");
 	// 生成随机数种子
 	ALittle.Math_RandomSeed(ALittle.Time_GetCurTime());
 	// 设置5个线程

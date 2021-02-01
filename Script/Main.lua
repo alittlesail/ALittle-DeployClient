@@ -30,7 +30,6 @@ DeployClient.g_ModuleBasePath = nil
 DeployClient.g_ScriptBasePath = nil
 DeployClient.g_ModuleBasePathEx = nil
 DeployClient.g_DPLConfig = nil
-DeployClient.g_DPLServerConfig = nil
 DeployClient.g_MainLayer = nil
 DeployClient.g_DialogLayer = nil
 function DeployClient.__Module_Setup(layer_group, control, module_base_path, script_base_path)
@@ -41,7 +40,6 @@ function DeployClient.__Module_Setup(layer_group, control, module_base_path, scr
 	DeployClient.g_ScriptBasePath = script_base_path
 	DeployClient.g_AUIPluinControl = A_ModuleSystem:LoadPlugin("AUIPlugin")
 	DeployClient.g_DPLConfig = ALittle.CreateConfigSystem(DeployClient.g_ModuleBasePath .. "/User.cfg")
-	DeployClient.g_DPLServerConfig = ALittle.CreateConfigSystem(DeployClient.g_ModuleBasePath .. "/Other/Server.cfg")
 	ALittle.Math_RandomSeed(ALittle.Time_GetCurTime())
 	ALittle.System_SetThreadCount(5)
 	DeployClient.g_MainLayer = ALittle.DisplayLayout(DeployClient.g_Control)

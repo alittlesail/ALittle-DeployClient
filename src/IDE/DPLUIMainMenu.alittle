@@ -6,6 +6,10 @@ protected class DPLUIMainMenu : ALittle.Linear
 	// 版本管理器
 	private AUIPlugin.AUIVersionManager _version_manager;
 
+    // 设置对话框
+    private ALittle.Dialog _setting_dialog;
+    private ALittle.ImageInput _setting_ip;
+
 	public fun TCtor()
 	{
         var group = new ALittle.TextRadioButtonGroup();
@@ -13,9 +17,7 @@ protected class DPLUIMainMenu : ALittle.Linear
         	child.group = group;
 
 		// 版本服务器
-		var version_ip = g_DPLServerConfig.GetConfig("version_ip", "www.alittleide.com");
-		var version_port = g_DPLServerConfig.GetConfig("version_port", 1100);
-		this._version_manager = new AUIPlugin.AUIVersionManager(version_ip, version_port, "alittle", "ALittleDeploy");
+		this._version_manager = new AUIPlugin.AUIVersionManager("www.alittleide.com", 1100, "alittle", "ALittleDeploy");
     
 		// 如果不是debug模式，那么就检查版本
 		[Language(Lua)]
@@ -42,5 +44,50 @@ protected class DPLUIMainMenu : ALittle.Linear
         [Language(Lua)]
 		menu.AddItem("版本检查", bind(this._version_manager.ShowDialog, this._version_manager));
 		menu.Show(event.target, bind(this.HandleMenuHide, this, event.target));
+    }
+
+    // 处理设置按钮
+    private fun HandleSettingMenuClick(ALittle.UIClickEvent event)
+    {
+        [Language(Lua)]
+        this.ShowSettingDialog();
+    }
+
+    public fun TryShowSettingDialog()
+    {
+        [Language(Lua)]
+        if (g_DPLConfig.GetString("setting_ip", "") == "")
+            this.ShowSettingDialog();
+    }
+
+    public fun ShowSettingDialog()
+    {
+        if (this._setting_dialog == null)
+        {
+            this._setting_dialog = g_Control.CreateControl{ALittle.Dialog}("setting_dialog", this);
+            A_LayerManager.AddToModal(this._setting_dialog);
+
+            this._setting_ip.text = g_DPLConfig.GetString("setting_ip", "");
+        }
+        this._setting_dialog.visible = true;
+    }
+
+    private fun HandleSettingComfirmClick(ALittle.UIClickEvent event)
+    {
+        this._setting_dialog.visible = false;
+
+        var ip = this._setting_ip.text;
+        if (g_DPLConfig.GetString("setting_ip", "") == ip)
+            return;
+
+        g_DPLConfig.SetConfig("setting_ip", ip);
+
+		g_DPLWebLoginManager.Shutdown();
+        g_DPLWebLoginManager.Setup(ip, 1801, false, g_DPLConfig);
+    }
+
+    private fun HandleSettingCancelClick(ALittle.UIClickEvent event)
+    {
+        this._setting_dialog.visible = false;
     }
 }

@@ -15,30 +15,29 @@ class DPLCenter
 		A_UISystem.keydown_callback = bind(this.HandleShortcutKey, this);
         // 退出处理
         A_UISystem.quit_callback = bind(this.HandleQuit, this);
+
+        // 尝试显示设置界面
+        this._main_menu.TryShowSettingDialog();
 	}
 
     public fun CreateHttpFileSender(string file_path) : ALittle.IHttpFileSender
     {
-        var default_ip = "";
+        var http_ip = "";
         [Language(JavaScript)]
-        default_ip = g_Control.host;
-
-		var http_ip = g_DPLServerConfig.GetConfig("http_ip", default_ip);
-		var http_port = g_DPLServerConfig.GetConfig("http_port", 1800);
-   
-        return ALittle.CreateHttpFileSender(http_ip, http_port, file_path, 0);
+        http_ip = g_Control.host;
+        [Language(Lua)]
+        http_ip = g_DPLConfig.GetString("setting_ip", "");
+        return ALittle.CreateHttpFileSender(http_ip, 1800, file_path, 0);
     }
 
     public fun CreateHttpSender() : ALittle.IHttpSender
     {
-        var default_ip = "";
+        var http_ip = "";
         [Language(JavaScript)]
-        default_ip = g_Control.host;
-
-		var http_ip = g_DPLServerConfig.GetConfig("http_ip", default_ip);
-		var http_port = g_DPLServerConfig.GetConfig("http_port", 1800);
-    
-        return ALittle.CreateHttpSender(http_ip, http_port);
+        http_ip = g_Control.host;
+        [Language(Lua)]
+        http_ip = g_DPLConfig.GetString("setting_ip", "");
+        return ALittle.CreateHttpSender(http_ip, 1800);
     }
 
 	public fun Shutdown()
