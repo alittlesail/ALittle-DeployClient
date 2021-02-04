@@ -83,7 +83,7 @@ protected class DPLUIMainMenu : ALittle.Linear
         g_DPLConfig.SetConfig("setting_ip", ip);
 
 		g_DPLWebLoginManager.Shutdown();
-        g_DPLWebLoginManager.Setup(ip, 1801, false, g_DPLConfig);
+        g_DPLWebLoginManager.Setup(ip, 1801, null, g_DPLConfig);
     }
 
     private fun HandleSettingCancelClick(ALittle.UIClickEvent event)

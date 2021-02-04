@@ -37,7 +37,7 @@ DeployClient.DPLUIAccount = JavaScript.Class(ALittle.DisplayLayout, {
 		DeployClient.g_DPLWebLoginManager.AddEventListener(___all_struct.get(-262794256), this, this.HandleAccountInReconnect);
 		DeployClient.g_DPLWebLoginManager.AddEventListener(___all_struct.get(-1848509213), this, this.HandleAccountInLogout);
 		DeployClient.g_DPLWebLoginManager.AddEventListener(___all_struct.get(-420010531), this, this.HandleAccountInLogin);
-		DeployClient.g_DPLWebLoginManager.Setup(client_ip, 1801, false, DeployClient.g_DPLConfig);
+		DeployClient.g_DPLWebLoginManager.Setup(client_ip, 1801, undefined, DeployClient.g_DPLConfig);
 	},
 	Shutdown : function() {
 		DeployClient.g_DPLWebLoginManager.Shutdown();

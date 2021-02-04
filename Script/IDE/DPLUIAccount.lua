@@ -44,7 +44,7 @@ function DeployClient.DPLUIAccount:TCtor()
 	DeployClient.g_DPLWebLoginManager:AddEventListener(___all_struct[-262794256], self, self.HandleAccountInReconnect)
 	DeployClient.g_DPLWebLoginManager:AddEventListener(___all_struct[-1848509213], self, self.HandleAccountInLogout)
 	DeployClient.g_DPLWebLoginManager:AddEventListener(___all_struct[-420010531], self, self.HandleAccountInLogin)
-	DeployClient.g_DPLWebLoginManager:Setup(client_ip, 1801, false, DeployClient.g_DPLConfig)
+	DeployClient.g_DPLWebLoginManager:Setup(client_ip, 1801, nil, DeployClient.g_DPLConfig)
 end
 
 function DeployClient.DPLUIAccount:Shutdown()

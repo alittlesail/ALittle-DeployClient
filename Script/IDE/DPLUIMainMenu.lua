@@ -63,7 +63,7 @@ function DeployClient.DPLUIMainMenu:HandleSettingComfirmClick(event)
 	end
 	DeployClient.g_DPLConfig:SetConfig("setting_ip", ip)
 	DeployClient.g_DPLWebLoginManager:Shutdown()
-	DeployClient.g_DPLWebLoginManager:Setup(ip, 1801, false, DeployClient.g_DPLConfig)
+	DeployClient.g_DPLWebLoginManager:Setup(ip, 1801, nil, DeployClient.g_DPLConfig)
 end
 
 function DeployClient.DPLUIMainMenu:HandleSettingCancelClick(event)

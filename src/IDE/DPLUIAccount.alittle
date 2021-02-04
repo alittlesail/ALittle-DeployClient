@@ -22,7 +22,7 @@ protected class DPLUIAccount : ALittle.DisplayLayout
 		g_DPLWebLoginManager.AddEventListener(this, this.HandleAccountInReconnect);
 		g_DPLWebLoginManager.AddEventListener(this, this.HandleAccountInLogout);
 		g_DPLWebLoginManager.AddEventListener(this, this.HandleAccountInLogin);
-		g_DPLWebLoginManager.Setup(client_ip, 1801, false, g_DPLConfig);
+		g_DPLWebLoginManager.Setup(client_ip, 1801, null, g_DPLConfig);
 	}
 	
 	public fun Shutdown()

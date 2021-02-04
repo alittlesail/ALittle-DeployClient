@@ -43,7 +43,7 @@ DeployClient.DPLUIMainMenu = JavaScript.Class(ALittle.Linear, {
 		}
 		DeployClient.g_DPLConfig.SetConfig("setting_ip", ip);
 		DeployClient.g_DPLWebLoginManager.Shutdown();
-		DeployClient.g_DPLWebLoginManager.Setup(ip, 1801, false, DeployClient.g_DPLConfig);
+		DeployClient.g_DPLWebLoginManager.Setup(ip, 1801, undefined, DeployClient.g_DPLConfig);
 	},
 	HandleSettingCancelClick : function(event) {
 		this._setting_dialog.visible = false;

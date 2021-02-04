@@ -235,23 +235,26 @@ DeployClient.DPLUITaskDetail = JavaScript.Class(ALittle.DisplayLayout, {
 		}
 	},
 	HandleNewJobClick : function(event) {
+		this.ShowCreateMenu(undefined);
+	},
+	ShowCreateMenu : function(job_index) {
 		let menu = ALittle.NewObject(AUIPlugin.AUIRightMenu);
-		menu.AddItem("批处理", this.HandleNewCommonJob.bind(this, "batch_job_dialog"));
-		menu.AddItem("复制目录", this.HandleNewCommonJob.bind(this, "deepcopy_job_dialog"));
-		menu.AddItem("复制文件", this.HandleNewCommonJob.bind(this, "copyfile_job_dialog"));
-		menu.AddItem("发送命令", this.HandleNewCommonJob.bind(this, "sendvirtualkey_job_dialog"));
-		menu.AddItem("等待进程退出", this.HandleNewCommonJob.bind(this, "waitprocessexit_job_dialog"));
-		menu.AddItem("创建进程", this.HandleNewCommonJob.bind(this, "createprocess_job_dialog"));
-		menu.AddItem("杀死进程", this.HandleNewCommonJob.bind(this, "killprocess_job_dialog"));
-		menu.AddItem("代码检查", this.HandleNewCommonJob.bind(this, "resharper_redmine_job_dialog"));
+		menu.AddItem("批处理", this.HandleNewCommonJob.bind(this, "batch_job_dialog", job_index));
+		menu.AddItem("复制目录", this.HandleNewCommonJob.bind(this, "deepcopy_job_dialog", job_index));
+		menu.AddItem("复制文件", this.HandleNewCommonJob.bind(this, "copyfile_job_dialog", job_index));
+		menu.AddItem("发送命令", this.HandleNewCommonJob.bind(this, "sendvirtualkey_job_dialog", job_index));
+		menu.AddItem("等待进程退出", this.HandleNewCommonJob.bind(this, "waitprocessexit_job_dialog", job_index));
+		menu.AddItem("创建进程", this.HandleNewCommonJob.bind(this, "createprocess_job_dialog", job_index));
+		menu.AddItem("杀死进程", this.HandleNewCommonJob.bind(this, "killprocess_job_dialog", job_index));
+		menu.AddItem("代码检查", this.HandleNewCommonJob.bind(this, "resharper_redmine_job_dialog", job_index));
 		menu.Show();
 	},
 	HandleStartTaskClick : function(event) {
 		DeployClient.g_DPLCenter.center.task_center.HandleStartTask(this._task_item);
 	},
-	HandleNewCommonJob : function(ui) {
+	HandleNewCommonJob : function(ui, job_index) {
 		let dialog = DeployClient.g_Control.CreateControl(ui);
-		dialog.Show(this._task_item.info.task_id, undefined, undefined);
+		dialog.Show(this._task_item.info.task_id, job_index, undefined);
 	},
 	AddJobItem : function(job_index, job_info) {
 		let job_item = {};
@@ -319,6 +322,7 @@ DeployClient.DPLUITaskDetail = JavaScript.Class(ALittle.DisplayLayout, {
 		menu.AddItem("上移", this.HandleMoveJob.bind(this, job_item, job_index, job_index - 1));
 		menu.AddItem("下移", this.HandleMoveJob.bind(this, job_item, job_index, job_index + 1));
 		menu.AddItem("复制", this.HandleCopyJob.bind(this, job_item, job_index));
+		menu.AddItem("新建", this.ShowCreateMenu.bind(this, job_index + 1));
 		menu.AddItem("删除", this.HandleDeleteJob.bind(this, job_item, job_index));
 		menu.Show();
 	},
