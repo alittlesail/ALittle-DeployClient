@@ -264,6 +264,8 @@ ALittle.IDisplayObject = JavaScript.Class(undefined, {
 	},
 	SetY : function(value) {
 	},
+	SetZ : function(value) {
+	},
 	SetScaleX : function(value) {
 	},
 	SetScaleY : function(value) {
@@ -298,6 +300,8 @@ ALittle.IDisplayObject = JavaScript.Class(undefined, {
 	},
 	RemoveAllChild : function() {
 	},
+	SetSortChild : function(value) {
+	},
 	SetFont : function(path, size) {
 	},
 	ClearTexture : function() {
@@ -305,8 +309,6 @@ ALittle.IDisplayObject = JavaScript.Class(undefined, {
 	SetTexture : function(texture) {
 	},
 	SetTextureCoord : function(t, b, l, r) {
-	},
-	SetFlip : function(value) {
 	},
 	SetRowColCount : function(row_count, col_count) {
 	},
@@ -951,11 +953,14 @@ JavaScript.JDisplayObject = JavaScript.Class(ALittle.IDisplayObject, {
 	},
 	SetX : function(x) {
 		this._x = x;
-		this._native.x = this._x;
+		this._native.x = Math.floor(this._x);
 	},
 	SetY : function(y) {
 		this._y = y;
-		this._native.y = this._y;
+		this._native.y = Math.floor(this._y);
+	},
+	SetZ : function(z) {
+		this._native.zIndex = z;
 	},
 	SetScaleX : function(value) {
 		this._scale.x = value;
@@ -1012,8 +1017,6 @@ JavaScript.JDisplayObject = JavaScript.Class(ALittle.IDisplayObject, {
 	SetTexture : function(texture) {
 	},
 	SetTextureCoord : function(t, b, l, r) {
-	},
-	SetFlip : function(value) {
 	},
 	SetRowColCount : function(row_count, col_count) {
 	},
@@ -1169,6 +1172,9 @@ JavaScript.JDisplayObjects = JavaScript.Class(JavaScript.JDisplayObject, {
 	RemoveAllChild : function() {
 		this._native.removeChildren(0);
 	},
+	SetSortChild : function(value) {
+		this._native.sortableChildren = value;
+	},
 }, "JavaScript.JDisplayObjects");
 
 if (JavaScript.JDisplayObjects === undefined) throw new Error(" extends class:JavaScript.JDisplayObjects is undefined");
@@ -1193,7 +1199,7 @@ JavaScript.JDisplayView = JavaScript.Class(JavaScript.JDisplayObjects, {
 	Draw : function() {
 		this._graphics.clear();
 		this._graphics.beginFill();
-		this._graphics.drawRect(0, 0, this._width, this._height);
+		this._graphics.drawRect(0, 0, Math.floor(this._width), Math.floor(this._height));
 		this._graphics.endFill();
 	},
 	RemoveChild : function(value) {
@@ -1260,7 +1266,7 @@ JavaScript.JQuad = JavaScript.Class(JavaScript.JDisplayObject, {
 	Draw : function() {
 		this._native.clear();
 		this._native.beginFill(this._color, this._alpha);
-		this._native.drawRect(0, 0, this._width, this._height);
+		this._native.drawRect(0, 0, Math.floor(this._width), Math.floor(this._height));
 		this._native.endFill();
 	},
 	SetWidth : function(value) {
@@ -1298,10 +1304,10 @@ JavaScript.JImage = JavaScript.Class(JavaScript.JDisplayObject, {
 		this._native = new PIXI.Sprite();
 	},
 	SetWidth : function(width) {
-		this._native.width = width;
+		this._native.width = Math.floor(width);
 	},
 	SetHeight : function(height) {
-		this._native.height = height;
+		this._native.height = Math.floor(height);
 	},
 	ClearTexture : function() {
 		this._native.texture = undefined;
@@ -1332,8 +1338,8 @@ JavaScript.JGrid9Image = JavaScript.Class(JavaScript.JDisplayObject, {
 		if (this._nine === undefined) {
 			this._nine = new PIXI.NineSlicePlane(texture.native, this._leftWidth, this._topHeight, this._rightWidth, this._bottomHeight);
 			this._native.addChild(this._nine);
-			this._nine.width = this._width;
-			this._nine.height = this._height;
+			this._nine.width = Math.floor(this._width);
+			this._nine.height = Math.floor(this._height);
 		} else {
 			this._native.texture = texture.native;
 		}
@@ -1343,37 +1349,37 @@ JavaScript.JGrid9Image = JavaScript.Class(JavaScript.JDisplayObject, {
 	SetWidth : function(width) {
 		this._width = width;
 		if (this._nine !== undefined) {
-			this._nine.width = width;
+			this._nine.width = Math.floor(width);
 		}
 	},
 	SetHeight : function(height) {
 		this._height = height;
 		if (this._nine !== undefined) {
-			this._nine.height = height;
+			this._nine.height = Math.floor(height);
 		}
 	},
 	SetLeftSize : function(value) {
 		this._leftWidth = value;
 		if (this._nine !== undefined) {
-			this._nine.leftWidth = value;
+			this._nine.leftWidth = Math.floor(value);
 		}
 	},
 	SetRightSize : function(value) {
 		this._rightWidth = value;
 		if (this._nine !== undefined) {
-			this._nine.rightWidth = value;
+			this._nine.rightWidth = Math.floor(value);
 		}
 	},
 	SetTopSize : function(value) {
 		this._topHeight = value;
 		if (this._nine !== undefined) {
-			this._nine.topHeight = value;
+			this._nine.topHeight = Math.floor(value);
 		}
 	},
 	SetBottomSize : function(value) {
 		this._bottomHeight = value;
 		if (this._nine !== undefined) {
-			this._nine.bottomHeight = value;
+			this._nine.bottomHeight = Math.floor(value);
 		}
 	},
 }, "JavaScript.JGrid9Image");
@@ -1391,10 +1397,10 @@ JavaScript.JSprite = JavaScript.Class(JavaScript.JDisplayObject, {
 		this._native = new PIXI.Sprite();
 	},
 	SetWidth : function(width) {
-		this._native.width = width;
+		this._native.width = Math.floor(width);
 	},
 	SetHeight : function(height) {
-		this._native.height = height;
+		this._native.height = Math.floor(height);
 	},
 	ClearTexture : function() {
 		this._texture = undefined;
@@ -4441,8 +4447,8 @@ option_map : {}
 })
 ALittle.RegStruct(-4982446, "ALittle.DisplayInfo", {
 name : "ALittle.DisplayInfo", ns_name : "ALittle", rl_name : "DisplayInfo", hash_code : -4982446,
-name_list : ["__target_class","__class_func","__base_attr","__show_attr","loop_map","__module","__class","__include","__extends","__childs","__event","__link","__shows_included","__childs_included","__extends_included","description","text","font_path","font_size","red","green","blue","alpha","bold","italic","underline","deleteline","x","y","x_type","x_value","y_type","y_value","width","height","width_type","width_value","height_type","height_value","scale_x","scale_y","center_x","center_y","angle","flip","hand_cursor","visible","disabled","left_size","right_size","top_size","bottom_size","texture_name","interval","play_loop_count","var_play","base_y","head_size","gap","up_size","down_size","cursor_red","cursor_green","cursor_blue","default_text_alpha","ims_padding","margin_left","margin_right","margin_top","margin_bottom","show_count","body_margin","screen_margin_left","screen_margin_right","screen_margin_top","screen_margin_bottom","start_degree","end_degree","line_spacing","max_line_count","font_red","font_green","font_blue","margin_halign","margin_valign","cursor_margin_up","cursor_margin_down","total_size","show_size","offset_rate","offset_step","grade","row_count","col_count","row_index","col_index","u1","v1","u2","v2","u3","v3","x1","y1","x2","y2","x3","y3","x_gap","y_gap","x_start_gap","y_start_gap","button_gap","button_start","button_margin","tab_index","view_margin","child_width_margin"],
-type_list : ["List<string>","any","Map<string,any>","Map<string,ALittle.DisplayInfo>","Map<string,ALittle.LoopGroupInfo>","string","string","string","string","List<ALittle.DisplayInfo>","List<ALittle.EventInfo>","string","bool","bool","bool","string","string","string","int","double","double","double","double","bool","bool","bool","bool","double","double","int","double","int","double","double","double","int","double","int","double","double","double","double","double","double","int","bool","bool","bool","double","double","double","double","string","int","int","bool","double","double","double","double","double","double","double","double","double","double","double","double","double","double","int","double","double","double","double","double","double","double","double","int","double","double","double","double","double","double","double","double","double","double","double","int","int","int","int","int","double","double","double","double","double","double","double","double","double","double","double","double","double","double","double","double","double","double","double","double","double","double"],
+name_list : ["__target_class","__class_func","__base_attr","__show_attr","loop_map","__module","__class","__include","__extends","__childs","__event","__link","__shows_included","__childs_included","__extends_included","description","text","font_path","font_size","red","green","blue","alpha","bold","italic","underline","deleteline","x","y","x_type","x_value","y_type","y_value","width","height","width_type","width_value","height_type","height_value","scale_x","scale_y","center_x","center_y","angle","hand_cursor","visible","disabled","left_size","right_size","top_size","bottom_size","texture_name","interval","play_loop_count","var_play","base_y","head_size","gap","up_size","down_size","cursor_red","cursor_green","cursor_blue","default_text_alpha","ims_padding","margin_left","margin_right","margin_top","margin_bottom","show_count","body_margin","screen_margin_left","screen_margin_right","screen_margin_top","screen_margin_bottom","start_degree","end_degree","line_spacing","max_line_count","font_red","font_green","font_blue","margin_halign","margin_valign","cursor_margin_up","cursor_margin_down","total_size","show_size","offset_rate","offset_step","grade","row_count","col_count","row_index","col_index","u1","v1","u2","v2","u3","v3","x1","y1","x2","y2","x3","y3","x_gap","y_gap","x_start_gap","y_start_gap","button_gap","button_start","button_margin","tab_index","view_margin","child_width_margin"],
+type_list : ["List<string>","any","Map<string,any>","Map<string,ALittle.DisplayInfo>","Map<string,ALittle.LoopGroupInfo>","string","string","string","string","List<ALittle.DisplayInfo>","List<ALittle.EventInfo>","string","bool","bool","bool","string","string","string","int","double","double","double","double","bool","bool","bool","bool","double","double","int","double","int","double","double","double","int","double","int","double","double","double","double","double","double","bool","bool","bool","double","double","double","double","string","int","int","bool","double","double","double","double","double","double","double","double","double","double","double","double","double","double","int","double","double","double","double","double","double","double","double","int","double","double","double","double","double","double","double","double","double","double","double","int","int","int","int","int","double","double","double","double","double","double","double","double","double","double","double","double","double","double","double","double","double","double","double","double","double","double"],
 option_map : {}
 })
 
@@ -4858,6 +4864,9 @@ ALittle.DisplayObject = JavaScript.Class(ALittle.UIEventDispatcher, {
 	},
 	get y_value() {
 		return this._y_value;
+	},
+	set z(value) {
+		this._show.SetZ(value);
 	},
 	set width(value) {
 		if (this._width === value) {
@@ -5430,6 +5439,9 @@ ALittle.DisplayGroup = JavaScript.Class(ALittle.DisplayObject, {
 		this._childs = [];
 		this._child_count = 0;
 	},
+	SetSortChild : function(value) {
+		this._show.SetSortChild(value);
+	},
 	set alpha(value) {
 		this._alpha = value;
 		if (this._show_parent !== undefined) {
@@ -5835,6 +5847,39 @@ ALittle.Quad = JavaScript.Class(ALittle.DisplayObject, {
 			this.DispatchEvent(___all_struct.get(286797479), c_event);
 		}
 	},
+	SetPosAsLine : function(start_x, start_y, end_x, end_y) {
+		this.x = start_x;
+		this.y = start_y;
+		let delta_x = end_x - start_x;
+		let delta_y = end_y - start_y;
+		let len = ALittle.Math_Sqrt(delta_x * delta_x + delta_y * delta_y);
+		if (len < 0.0001) {
+			return;
+		}
+		let rad = 0.0;
+		if (delta_x >= 0) {
+			if (delta_y >= 0) {
+				rad = ALittle.Math_ASin(delta_y / len);
+			} else {
+				rad = -ALittle.Math_ASin(-delta_y / len);
+			}
+		} else {
+			if (delta_y >= 0) {
+				rad = 3.14159265 - ALittle.Math_ASin(delta_y / len);
+			} else {
+				rad = 3.14159265 + ALittle.Math_ASin(-delta_y / len);
+			}
+		}
+		this.angle = rad / 3.14159265 * 180;
+	},
+	SetSizeAsLine : function(line_size, start_x, start_y, end_x, end_y) {
+		let delta_x = end_x - start_x;
+		let delta_y = end_y - start_y;
+		this.width = ALittle.Math_Sqrt(delta_x * delta_x + delta_y * delta_y);
+		this.height = line_size;
+		this.center_x = 0;
+		this.center_y = line_size / 2;
+	},
 }, "ALittle.Quad");
 
 }
@@ -5853,7 +5898,6 @@ ALittle.Image = JavaScript.Class(ALittle.DisplayObject, {
 		this._tex_coord_b = 1;
 		this._tex_coord_l = 0;
 		this._tex_coord_r = 1;
-		this._flip = 0;
 		this.AddEventListener(___all_struct.get(40651933), this, this.HandleLButtonUp);
 		this.AddEventListener(___all_struct.get(683647260), this, this.HandleMButtonUp);
 		this.AddEventListener(___all_struct.get(734860930), this, this.HandleFLButtonUp);
@@ -5985,13 +6029,6 @@ ALittle.Image = JavaScript.Class(ALittle.DisplayObject, {
 	get texture_height() {
 		return this._texture_height;
 	},
-	get flip() {
-		return this._flip;
-	},
-	set flip(value) {
-		this._flip = value;
-		this._show.SetFlip(value);
-	},
 }, "ALittle.Image");
 
 }
@@ -6014,7 +6051,6 @@ ALittle.Sprite = JavaScript.Class(ALittle.DisplayObject, {
 		this._col_count = 1;
 		this._row_index = 1;
 		this._col_index = 1;
-		this._flip = 0;
 		this.AddEventListener(___all_struct.get(40651933), this, this.HandleLButtonUp);
 		this.AddEventListener(___all_struct.get(683647260), this, this.HandleMButtonUp);
 		this.AddEventListener(___all_struct.get(734860930), this, this.HandleFLButtonUp);
@@ -6162,13 +6198,6 @@ ALittle.Sprite = JavaScript.Class(ALittle.DisplayObject, {
 		this._col_index = col;
 		this._show.SetRowColIndex(this._row_index, this._col_index);
 	},
-	get flip() {
-		return this._flip;
-	},
-	set flip(value) {
-		this._flip = value;
-		this._show.SetFlip(value);
-	},
 }, "ALittle.Sprite");
 
 }
@@ -6187,7 +6216,6 @@ ALittle.Text = JavaScript.Class(ALittle.DisplayObject, {
 		this._italic = false;
 		this._underline = false;
 		this._deleteline = false;
-		this._flip = 0;
 		this._show = ALittle.NewObject(JavaScript.JText);
 	},
 	Redraw : function() {
@@ -6315,13 +6343,6 @@ ALittle.Text = JavaScript.Class(ALittle.DisplayObject, {
 	get font_height() {
 		return this._show.GetFontHeight();
 	},
-	get flip() {
-		return this._flip;
-	},
-	set flip(value) {
-		this._flip = value;
-		this._show.SetFlip(value);
-	},
 }, "ALittle.Text");
 
 }
@@ -6338,7 +6359,6 @@ ALittle.TextArea = JavaScript.Class(ALittle.DisplayObject, {
 		this._italic = false;
 		this._underline = false;
 		this._deleteline = false;
-		this._flip = 0;
 		this._halign_type = 0;
 		this._valign_type = 0;
 		this._show = ALittle.NewObject(JavaScript.JTextArea);
@@ -6443,13 +6463,6 @@ ALittle.TextArea = JavaScript.Class(ALittle.DisplayObject, {
 	get real_height() {
 		return this._show.GetRealHeight();
 	},
-	get flip() {
-		return this._flip;
-	},
-	set flip(value) {
-		this._flip = value;
-		this._show.SetFlip(value);
-	},
 }, "ALittle.TextArea");
 
 }
@@ -6477,7 +6490,6 @@ ALittle.TextEdit = JavaScript.Class(ALittle.DisplayObject, {
 		this._deleteline = false;
 		this._default_text = "";
 		this._default_text_alpha = 1;
-		this._flip = 0;
 		this._current_flash_alpha = 1;
 		this._current_flash_dir = -0.05;
 		this._is_selecting = false;
@@ -7031,13 +7043,6 @@ ALittle.TextEdit = JavaScript.Class(ALittle.DisplayObject, {
 	get cursor_blue() {
 		return this._cursor_blue;
 	},
-	get flip() {
-		return this._flip;
-	},
-	set flip(value) {
-		this._flip = value;
-		this._show.SetFlip(value);
-	},
 }, "ALittle.TextEdit");
 
 }
@@ -7066,7 +7071,6 @@ ALittle.TextInput = JavaScript.Class(ALittle.DisplayObject, {
 		this._password_mode = false;
 		this._default_text = "";
 		this._default_text_alpha = 1;
-		this._flip = 0;
 		this._current_flash_alpha = 1;
 		this._current_flash_dir = -0.05;
 		this._is_selecting = false;
@@ -7562,13 +7566,6 @@ ALittle.TextInput = JavaScript.Class(ALittle.DisplayObject, {
 	get cursor_blue() {
 		return this._cursor_blue;
 	},
-	get flip() {
-		return this._flip;
-	},
-	set flip(value) {
-		this._flip = value;
-		this._show.SetFlip(value);
-	},
 }, "ALittle.TextInput");
 
 }
@@ -8045,7 +8042,6 @@ ALittle.Grid9Image = JavaScript.Class(ALittle.DisplayObject, {
 		this._show = ALittle.NewObject(JavaScript.JGrid9Image);
 		this._texture_width = 0;
 		this._texture_height = 0;
-		this._flip = 0;
 		this._tex_coord_t = 0;
 		this._tex_coord_b = 1;
 		this._tex_coord_l = 0;
@@ -8210,13 +8206,6 @@ ALittle.Grid9Image = JavaScript.Class(ALittle.DisplayObject, {
 	},
 	get texture_height() {
 		return this._texture_height;
-	},
-	get flip() {
-		return this._flip;
-	},
-	set flip(value) {
-		this._flip = value;
-		this._show.SetFlip(value);
 	},
 }, "ALittle.Grid9Image");
 
