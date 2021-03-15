@@ -196,6 +196,7 @@ public class DPLUITaskCenter : ALittle.DisplayLayout
         task_info._button.text = info.task_name;
         task_info.info.task_desc = info.task_desc;
         task_info.info.web_hook = info.web_hook;
+        task_info.info.timer = info.timer;
 
         if (task_info.detail != null) task_info.detail.UpdateTaskInfo();
     }

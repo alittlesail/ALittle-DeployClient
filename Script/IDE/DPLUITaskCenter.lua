@@ -35,8 +35,8 @@ option_map = {}
 })
 ALittle.RegStruct(-1662612614, "DeployServer.NUpdateTaskInfo", {
 name = "DeployServer.NUpdateTaskInfo", ns_name = "DeployServer", rl_name = "NUpdateTaskInfo", hash_code = -1662612614,
-name_list = {"task_id","task_name","task_desc","web_hook"},
-type_list = {"int","string","string","List<string>"},
+name_list = {"task_id","task_name","task_desc","web_hook","timer"},
+type_list = {"int","string","string","List<string>","DeployServer.TaskTimer"},
 option_map = {}
 })
 ALittle.RegStruct(-1533563228, "DeployServer.S2CCreateTask", {
@@ -105,6 +105,12 @@ name_list = {"task_id","job_index"},
 type_list = {"int","int"},
 option_map = {}
 })
+ALittle.RegStruct(-1004838094, "DeployServer.TaskTimer", {
+name = "DeployServer.TaskTimer", ns_name = "DeployServer", rl_name = "TaskTimer", hash_code = -1004838094,
+name_list = {"type","interval","year_point","month_point","day_point","hour_point","minute_point","second_point"},
+type_list = {"int","int","int","int","int","int","int","int"},
+option_map = {}
+})
 ALittle.RegStruct(958494922, "ALittle.UIChangedEvent", {
 name = "ALittle.UIChangedEvent", ns_name = "ALittle", rl_name = "UIChangedEvent", hash_code = 958494922,
 name_list = {"target"},
@@ -161,8 +167,8 @@ option_map = {}
 })
 ALittle.RegStruct(390627548, "DeployServer.D_TaskInfo", {
 name = "DeployServer.D_TaskInfo", ns_name = "DeployServer", rl_name = "D_TaskInfo", hash_code = 390627548,
-name_list = {"task_id","task_name","task_desc","web_hook","create_time","status","progress","job_list","build_list"},
-type_list = {"int","string","string","List<string>","int","int","double","List<DeployServer.D_JobInfo>","List<DeployServer.D_BuildInfo>"},
+name_list = {"task_id","task_name","task_desc","web_hook","create_time","timer","status","progress","job_list","build_list"},
+type_list = {"int","string","string","List<string>","int","DeployServer.TaskTimer","int","double","List<DeployServer.D_JobInfo>","List<DeployServer.D_BuildInfo>"},
 option_map = {}
 })
 ALittle.RegStruct(-369409021, "DeployClient.TaskItemInfo", {
@@ -379,6 +385,7 @@ function DeployClient.DPLUITaskCenter:UpdateTaskItem(info)
 	task_info._button.text = info.task_name
 	task_info.info.task_desc = info.task_desc
 	task_info.info.web_hook = info.web_hook
+	task_info.info.timer = info.timer
 	if task_info.detail ~= nil then
 		task_info.detail:UpdateTaskInfo()
 	end

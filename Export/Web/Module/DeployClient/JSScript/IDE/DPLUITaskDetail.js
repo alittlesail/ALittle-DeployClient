@@ -88,8 +88,14 @@ option_map : {}
 })
 ALittle.RegStruct(1149037254, "DeployServer.C2SUpdateTaskInfo", {
 name : "DeployServer.C2SUpdateTaskInfo", ns_name : "DeployServer", rl_name : "C2SUpdateTaskInfo", hash_code : 1149037254,
-name_list : ["task_id","task_name","task_desc","web_hook"],
-type_list : ["int","string","string","List<string>"],
+name_list : ["task_id","task_name","task_desc","web_hook","timer"],
+type_list : ["int","string","string","List<string>","DeployServer.TaskTimer"],
+option_map : {}
+})
+ALittle.RegStruct(-1004838094, "DeployServer.TaskTimer", {
+name : "DeployServer.TaskTimer", ns_name : "DeployServer", rl_name : "TaskTimer", hash_code : -1004838094,
+name_list : ["type","interval","year_point","month_point","day_point","hour_point","minute_point","second_point"],
+type_list : ["int","int","int","int","int","int","int","int"],
 option_map : {}
 })
 ALittle.RegStruct(958494922, "ALittle.UIChangedEvent", {
@@ -129,6 +135,12 @@ DeployClient.DPLUITaskDetail = JavaScript.Class(ALittle.DisplayLayout, {
 		this._job_group = new Map();
 		this._build_group = new Map();
 	},
+	TCtor : function() {
+		let timer_group = new Map();
+		this._task_timer_none_radio.group = timer_group;
+		this._task_timer_interval_radio.group = timer_group;
+		this._task_timer_point_radio.group = timer_group;
+	},
 	Init : function(task_item) {
 		this._task_item = task_item;
 		this.UpdateTaskInfo();
@@ -149,6 +161,137 @@ DeployClient.DPLUITaskDetail = JavaScript.Class(ALittle.DisplayLayout, {
 		this._task_name_input.text = this._task_item.info.task_name;
 		this._task_desc_input.text = this._task_item.info.task_desc;
 		this._webhook_input.text = ALittle.String_Join(this._task_item.info.web_hook, "\n");
+		let timer = this._task_item.info.timer;
+		if (timer.type === undefined) {
+			timer.type = 0;
+		}
+		if (timer.interval === undefined) {
+			timer.interval = 0;
+		}
+		if (timer.year_point === undefined) {
+			timer.year_point = 0;
+		}
+		if (timer.month_point === undefined) {
+			timer.month_point = 0;
+		}
+		if (timer.day_point === undefined) {
+			timer.day_point = 0;
+		}
+		if (timer.hour_point === undefined) {
+			timer.hour_point = 0;
+		}
+		if (timer.minute_point === undefined) {
+			timer.minute_point = 0;
+		}
+		if (timer.second_point === undefined) {
+			timer.second_point = 0;
+		}
+		if (this._task_item.info.timer.type === 1) {
+			this._task_timer_interval_radio.selected = true;
+		} else if (this._task_item.info.timer.type === 2) {
+			this._task_timer_point_radio.selected = true;
+		} else {
+			this._task_timer_none_radio.selected = true;
+		}
+		if (this._task_item.info.timer.interval % (3600 * 24) === 0) {
+			this._task_timer_interval_input.text = ALittle.Math_Floor(this._task_item.info.timer.interval / (3600 * 24));
+			this._task_timer_interval_unit_dropdown.text = "天";
+		} else if (this._task_item.info.timer.interval % 3600 === 0) {
+			this._task_timer_interval_input.text = ALittle.Math_Floor(this._task_item.info.timer.interval / 3600);
+			this._task_timer_interval_unit_dropdown.text = "小时";
+		} else if (this._task_item.info.timer.interval % 60 === 0) {
+			this._task_timer_interval_input.text = ALittle.Math_Floor(this._task_item.info.timer.interval / 60);
+			this._task_timer_interval_unit_dropdown.text = "分钟";
+		} else {
+			this._task_timer_interval_input.text = this._task_item.info.timer.interval;
+			this._task_timer_interval_unit_dropdown.text = "秒";
+		}
+		this._task_timer_second_point_input.text = this._task_item.info.timer.second_point;
+		this._task_timer_minute_point_input.text = this._task_item.info.timer.minute_point;
+		this._task_timer_hour_point_input.text = this._task_item.info.timer.hour_point;
+		this._task_timer_day_point_input.text = this._task_item.info.timer.day_point;
+		this._task_timer_month_point_input.text = this._task_item.info.timer.month_point;
+		this._task_timer_year_point_input.text = this._task_item.info.timer.year_point;
+		let [result, text] = this.CheckTimerError();
+		this._task_timer_error_text.text = text;
+	},
+	CheckTimerError : function() {
+		if (this._task_timer_interval_radio.selected) {
+			let interval = ALittle.Math_ToInt(this._task_timer_interval_input.text);
+			if (interval === undefined || interval < 0) {
+				return [false, "间隔时间错误：请填写大于0的间隔时间"];
+			}
+			return [true, "任务将在每" + interval + this._task_timer_interval_unit_dropdown.text + "自动执行一次"];
+		}
+		if (this._task_timer_point_radio.selected) {
+			let hour_point = ALittle.Math_ToInt(this._task_timer_hour_point_input.text);
+			if (hour_point === undefined || hour_point < 0 || hour_point > 23) {
+				return [false, "定时时间错误：小时数取值范围在[0,23]"];
+			}
+			let minute_point = ALittle.Math_ToInt(this._task_timer_minute_point_input.text);
+			if (minute_point === undefined || minute_point < 0 || minute_point > 59) {
+				return [false, "定时时间错误：分钟数取值范围在[0,59]"];
+			}
+			let second_point = ALittle.Math_ToInt(this._task_timer_second_point_input.text);
+			if (second_point === undefined || second_point < 0 || second_point > 59) {
+				return [false, "定时时间错误：秒数取值范围在[0,59]"];
+			}
+			let day_text = hour_point + "时 " + minute_point + "分 " + second_point + "秒";
+			let year_point = ALittle.Math_ToInt(this._task_timer_year_point_input.text);
+			if (year_point !== undefined && year_point > 0) {
+				let month_point = ALittle.Math_ToInt(this._task_timer_month_point_input.text);
+				if (month_point === undefined || month_point < 1 || month_point > 12) {
+					return [false, "定时时间错误：在确定" + year_point + "年的情况下，月份取值范围在[1,12]"];
+				}
+				let day_count = ALittle.Time_GetMonthDayCount(year_point, month_point);
+				let day_point = ALittle.Math_ToInt(this._task_timer_day_point_input.text);
+				if (day_point === undefined || day_point < 1 || day_point > day_count) {
+					return [false, "定时时间错误：在确定" + year_point + "年" + month_point + "月的情况下，日期取值范围在[1," + day_count + "]"];
+				}
+				return [true, "定时间为:" + year_point + "年 " + month_point + "月 " + day_point + "日 " + day_text + " 执行一次"];
+			}
+			let cur_time = ALittle.Time_GetCurTime();
+			let cur_year = ALittle.Time_GetYear(cur_time);
+			let month_point = ALittle.Math_ToInt(this._task_timer_month_point_input.text);
+			if (month_point !== undefined && month_point > 0) {
+				let day_point = ALittle.Math_ToInt(this._task_timer_day_point_input.text);
+				if (day_point === undefined || day_point < 1 || day_point > 31) {
+					return [false, "定时时间错误：在确定" + month_point + "月的情况下，日期取值范围在[1,31]"];
+				}
+				if ((day_point === undefined || day_point < 1 || day_point > 31) && (month_point === 1 || month_point === 3 || month_point === 5 || month_point === 7 || month_point === 8 || month_point === 10 || month_point === 12)) {
+					return [false, "定时时间错误：在确定" + month_point + "月的情况下，日期取值范围在[1,31]"];
+				}
+				if ((day_point === undefined || day_point < 1 || day_point > 30) && (month_point === 4 || month_point === 6 || month_point === 9 || month_point === 11)) {
+					return [false, "定时时间错误：在确定" + month_point + "月的情况下，日期取值范围在[1,30]"];
+				}
+				if ((day_point === undefined || day_point < 1 || day_point > 29) && month_point === 2) {
+					return [false, "定时时间错误：在确定" + month_point + "月的情况下，日期取值范围在[1,29]"];
+				}
+				let ext_text = "";
+				if (day_point === 29 && month_point === 2) {
+					ext_text = "(如果" + month_point + "月没有" + day_point + "日则跳过)";
+				}
+				return [true, "定时间为:每年" + month_point + "月 " + day_point + "日 " + day_text + " 执行一次" + ext_text];
+			}
+			let day_point = ALittle.Math_ToInt(this._task_timer_day_point_input.text);
+			if (day_point !== undefined && day_point > 0) {
+				if (day_point > 31) {
+					return [false, "定时时间错误：日期取值范围最多在[1,31]"];
+				}
+				let ext_text = "";
+				if (day_point >= 29) {
+					ext_text = "(如果当月没有" + day_point + "日则跳过)";
+				}
+				return [true, "定时间为:每月 " + day_point + "日 " + day_text + " 执行一次" + ext_text];
+			}
+			return [true, "定时间为:每天 " + day_text + " 执行一次"];
+		}
+		return [true, "关闭定时"];
+	},
+	HandleUpdateErrorText : function(event) {
+		let [result, text] = this.CheckTimerError();
+		this._task_timer_error_text.text = text;
+		this._save_button.disabled = false;
 	},
 	UpdateJobInfo : function(index) {
 		let job_info = this._task_item.info.job_list[index - 1];
@@ -229,6 +372,30 @@ DeployClient.DPLUITaskDetail = JavaScript.Class(ALittle.DisplayLayout, {
 		msg.task_name = this._task_name_input.text;
 		msg.task_desc = this._task_desc_input.text;
 		msg.web_hook = ALittle.String_SplitSepList(this._webhook_input.text, ["\r", "\n"]);
+		msg.timer = {};
+		if (this._task_timer_interval_radio.selected) {
+			msg.timer.type = 1;
+		} else if (this._task_timer_point_radio.selected) {
+			msg.timer.type = 2;
+		} else {
+			msg.timer.type = 0;
+		}
+		msg.timer.interval = ALittle.Math_ToInt(this._task_timer_interval_input.text);
+		if (msg.timer.interval !== undefined) {
+			if (this._task_timer_interval_unit_dropdown.text === "天") {
+				msg.timer.interval = msg.timer.interval * (3600 * 24);
+			} else if (this._task_timer_interval_unit_dropdown.text === "小时") {
+				msg.timer.interval = msg.timer.interval * (3600);
+			} else if (this._task_timer_interval_unit_dropdown.text === "分钟") {
+				msg.timer.interval = msg.timer.interval * (60);
+			}
+		}
+		msg.timer.second_point = ALittle.Math_ToInt(this._task_timer_second_point_input.text);
+		msg.timer.minute_point = ALittle.Math_ToInt(this._task_timer_minute_point_input.text);
+		msg.timer.hour_point = ALittle.Math_ToInt(this._task_timer_hour_point_input.text);
+		msg.timer.day_point = ALittle.Math_ToInt(this._task_timer_day_point_input.text);
+		msg.timer.month_point = ALittle.Math_ToInt(this._task_timer_month_point_input.text);
+		msg.timer.year_point = ALittle.Math_ToInt(this._task_timer_year_point_input.text);
 		let [error] = await ALittle.IMsgCommon.InvokeRPC(1149037254, msg_client, msg);
 		if (error !== undefined) {
 			g_AUITool.ShowNotice("提示", error);

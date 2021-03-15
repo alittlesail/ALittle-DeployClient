@@ -81,7 +81,12 @@ window.RequireCEngine = function(base_path) {
 }
 
 window.__ALITTLEAPI_HandleConsoleCmd = function(cmd) {
-	ALittle.ExecuteCommand(cmd);
+	let [error, result] = (function() { try { let ___VALUE = ALittle.ExecuteCommand.call(undefined, cmd); return [undefined, ___VALUE]; } catch (___ERROR) { return [___ERROR.message]; } })();
+	if (error !== undefined) {
+		ALittle.Warn(error);
+	} else if (result !== undefined) {
+		ALittle.Log(result);
+	}
 }
 
 window.__ALITTLEAPI_FingerMoved = function(x, y, finger_id, touch_id) {
@@ -3992,8 +3997,8 @@ option_map : {}
 })
 ALittle.RegStruct(1354499457, "ALittle.UIDropEvent", {
 name : "ALittle.UIDropEvent", ns_name : "ALittle", rl_name : "UIDropEvent", hash_code : 1354499457,
-name_list : ["target","drop_target"],
-type_list : ["ALittle.DisplayObject","ALittle.DisplayObject"],
+name_list : ["target","drop_target","rel_x","rel_y","abs_x","abs_y"],
+type_list : ["ALittle.DisplayObject","ALittle.DisplayObject","double","double","double","double"],
 option_map : {}
 })
 ALittle.RegStruct(-1347278145, "ALittle.UIButtonEvent", {
@@ -13682,6 +13687,7 @@ ALittle.ImagePlay = JavaScript.Class(ALittle.DisplayLayout, {
 			if (v === undefined) break;
 			v.visible = false;
 		}
+		this.PlayUpdate();
 		this._play_loop = ALittle.NewObject(ALittle.LoopFunction, this.PlayUpdate.bind(this), -1, this._interval, 0);
 		A_WeakLoopSystem.AddUpdater(this._play_loop);
 	},
@@ -13735,6 +13741,7 @@ ALittle.SpritePlay = JavaScript.Class(ALittle.Sprite, {
 		this._play_index = 0;
 		this._row_index = 1;
 		this._col_index = 1;
+		this.PlayUpdate();
 		this._play_loop = ALittle.NewObject(ALittle.LoopFunction, this.PlayUpdate.bind(this), -1, this._interval, 0);
 		A_WeakLoopSystem.AddUpdater(this._play_loop);
 	},
@@ -13963,6 +13970,7 @@ ALittle.FramePlay = JavaScript.Class(ALittle.DisplayLayout, {
 		this._play_child_index = 0;
 		this._play_loop_index = 0;
 		this.HideAllChild();
+		this.PlayUpdate();
 		this._play_loop = ALittle.NewObject(ALittle.LoopFunction, this.PlayUpdateLoop.bind(this), -1, this._interval, 0);
 		A_WeakLoopSystem.AddUpdater(this._play_loop);
 	},

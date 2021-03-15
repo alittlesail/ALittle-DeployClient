@@ -95,8 +95,14 @@ option_map = {}
 })
 ALittle.RegStruct(1149037254, "DeployServer.C2SUpdateTaskInfo", {
 name = "DeployServer.C2SUpdateTaskInfo", ns_name = "DeployServer", rl_name = "C2SUpdateTaskInfo", hash_code = 1149037254,
-name_list = {"task_id","task_name","task_desc","web_hook"},
-type_list = {"int","string","string","List<string>"},
+name_list = {"task_id","task_name","task_desc","web_hook","timer"},
+type_list = {"int","string","string","List<string>","DeployServer.TaskTimer"},
+option_map = {}
+})
+ALittle.RegStruct(-1004838094, "DeployServer.TaskTimer", {
+name = "DeployServer.TaskTimer", ns_name = "DeployServer", rl_name = "TaskTimer", hash_code = -1004838094,
+name_list = {"type","interval","year_point","month_point","day_point","hour_point","minute_point","second_point"},
+type_list = {"int","int","int","int","int","int","int","int"},
 option_map = {}
 })
 ALittle.RegStruct(958494922, "ALittle.UIChangedEvent", {
@@ -138,6 +144,13 @@ function DeployClient.DPLUITaskDetail:Ctor()
 	___rawset(self, "_build_group", {})
 end
 
+function DeployClient.DPLUITaskDetail:TCtor()
+	local timer_group = {}
+	self._task_timer_none_radio.group = timer_group
+	self._task_timer_interval_radio.group = timer_group
+	self._task_timer_point_radio.group = timer_group
+end
+
 function DeployClient.DPLUITaskDetail:Init(task_item)
 	self._task_item = task_item
 	self:UpdateTaskInfo()
@@ -161,6 +174,139 @@ function DeployClient.DPLUITaskDetail:UpdateTaskInfo()
 	self._task_name_input.text = self._task_item.info.task_name
 	self._task_desc_input.text = self._task_item.info.task_desc
 	self._webhook_input.text = ALittle.String_Join(self._task_item.info.web_hook, "\n")
+	local timer = self._task_item.info.timer
+	if timer.type == nil then
+		timer.type = 0
+	end
+	if timer.interval == nil then
+		timer.interval = 0
+	end
+	if timer.year_point == nil then
+		timer.year_point = 0
+	end
+	if timer.month_point == nil then
+		timer.month_point = 0
+	end
+	if timer.day_point == nil then
+		timer.day_point = 0
+	end
+	if timer.hour_point == nil then
+		timer.hour_point = 0
+	end
+	if timer.minute_point == nil then
+		timer.minute_point = 0
+	end
+	if timer.second_point == nil then
+		timer.second_point = 0
+	end
+	if self._task_item.info.timer.type == 1 then
+		self._task_timer_interval_radio.selected = true
+	elseif self._task_item.info.timer.type == 2 then
+		self._task_timer_point_radio.selected = true
+	else
+		self._task_timer_none_radio.selected = true
+	end
+	if self._task_item.info.timer.interval % (3600 * 24) == 0 then
+		self._task_timer_interval_input.text = ALittle.Math_Floor(self._task_item.info.timer.interval / (3600 * 24))
+		self._task_timer_interval_unit_dropdown.text = "天"
+	elseif self._task_item.info.timer.interval % 3600 == 0 then
+		self._task_timer_interval_input.text = ALittle.Math_Floor(self._task_item.info.timer.interval / 3600)
+		self._task_timer_interval_unit_dropdown.text = "小时"
+	elseif self._task_item.info.timer.interval % 60 == 0 then
+		self._task_timer_interval_input.text = ALittle.Math_Floor(self._task_item.info.timer.interval / 60)
+		self._task_timer_interval_unit_dropdown.text = "分钟"
+	else
+		self._task_timer_interval_input.text = self._task_item.info.timer.interval
+		self._task_timer_interval_unit_dropdown.text = "秒"
+	end
+	self._task_timer_second_point_input.text = self._task_item.info.timer.second_point
+	self._task_timer_minute_point_input.text = self._task_item.info.timer.minute_point
+	self._task_timer_hour_point_input.text = self._task_item.info.timer.hour_point
+	self._task_timer_day_point_input.text = self._task_item.info.timer.day_point
+	self._task_timer_month_point_input.text = self._task_item.info.timer.month_point
+	self._task_timer_year_point_input.text = self._task_item.info.timer.year_point
+	local result, text = self:CheckTimerError()
+	self._task_timer_error_text.text = text
+end
+
+function DeployClient.DPLUITaskDetail:CheckTimerError()
+	if self._task_timer_interval_radio.selected then
+		local interval = ALittle.Math_ToInt(self._task_timer_interval_input.text)
+		if interval == nil or interval < 0 then
+			return false, "间隔时间错误：请填写大于0的间隔时间"
+		end
+		return true, "任务将在每" .. interval .. self._task_timer_interval_unit_dropdown.text .. "自动执行一次"
+	end
+	if self._task_timer_point_radio.selected then
+		local hour_point = ALittle.Math_ToInt(self._task_timer_hour_point_input.text)
+		if hour_point == nil or hour_point < 0 or hour_point > 23 then
+			return false, "定时时间错误：小时数取值范围在[0,23]"
+		end
+		local minute_point = ALittle.Math_ToInt(self._task_timer_minute_point_input.text)
+		if minute_point == nil or minute_point < 0 or minute_point > 59 then
+			return false, "定时时间错误：分钟数取值范围在[0,59]"
+		end
+		local second_point = ALittle.Math_ToInt(self._task_timer_second_point_input.text)
+		if second_point == nil or second_point < 0 or second_point > 59 then
+			return false, "定时时间错误：秒数取值范围在[0,59]"
+		end
+		local day_text = hour_point .. "时 " .. minute_point .. "分 " .. second_point .. "秒"
+		local year_point = ALittle.Math_ToInt(self._task_timer_year_point_input.text)
+		if year_point ~= nil and year_point > 0 then
+			local month_point = ALittle.Math_ToInt(self._task_timer_month_point_input.text)
+			if month_point == nil or month_point < 1 or month_point > 12 then
+				return false, "定时时间错误：在确定" .. year_point .. "年的情况下，月份取值范围在[1,12]"
+			end
+			local day_count = ALittle.Time_GetMonthDayCount(year_point, month_point)
+			local day_point = ALittle.Math_ToInt(self._task_timer_day_point_input.text)
+			if day_point == nil or day_point < 1 or day_point > day_count then
+				return false, "定时时间错误：在确定" .. year_point .. "年" .. month_point .. "月的情况下，日期取值范围在[1," .. day_count .. "]"
+			end
+			return true, "定时间为:" .. year_point .. "年 " .. month_point .. "月 " .. day_point .. "日 " .. day_text .. " 执行一次"
+		end
+		local cur_time = ALittle.Time_GetCurTime()
+		local cur_year = ALittle.Time_GetYear(cur_time)
+		local month_point = ALittle.Math_ToInt(self._task_timer_month_point_input.text)
+		if month_point ~= nil and month_point > 0 then
+			local day_point = ALittle.Math_ToInt(self._task_timer_day_point_input.text)
+			if day_point == nil or day_point < 1 or day_point > 31 then
+				return false, "定时时间错误：在确定" .. month_point .. "月的情况下，日期取值范围在[1,31]"
+			end
+			if (day_point == nil or day_point < 1 or day_point > 31) and (month_point == 1 or month_point == 3 or month_point == 5 or month_point == 7 or month_point == 8 or month_point == 10 or month_point == 12) then
+				return false, "定时时间错误：在确定" .. month_point .. "月的情况下，日期取值范围在[1,31]"
+			end
+			if (day_point == nil or day_point < 1 or day_point > 30) and (month_point == 4 or month_point == 6 or month_point == 9 or month_point == 11) then
+				return false, "定时时间错误：在确定" .. month_point .. "月的情况下，日期取值范围在[1,30]"
+			end
+			if (day_point == nil or day_point < 1 or day_point > 29) and month_point == 2 then
+				return false, "定时时间错误：在确定" .. month_point .. "月的情况下，日期取值范围在[1,29]"
+			end
+			local ext_text = ""
+			if day_point == 29 and month_point == 2 then
+				ext_text = "(如果" .. month_point .. "月没有" .. day_point .. "日则跳过)"
+			end
+			return true, "定时间为:每年" .. month_point .. "月 " .. day_point .. "日 " .. day_text .. " 执行一次" .. ext_text
+		end
+		local day_point = ALittle.Math_ToInt(self._task_timer_day_point_input.text)
+		if day_point ~= nil and day_point > 0 then
+			if day_point > 31 then
+				return false, "定时时间错误：日期取值范围最多在[1,31]"
+			end
+			local ext_text = ""
+			if day_point >= 29 then
+				ext_text = "(如果当月没有" .. day_point .. "日则跳过)"
+			end
+			return true, "定时间为:每月 " .. day_point .. "日 " .. day_text .. " 执行一次" .. ext_text
+		end
+		return true, "定时间为:每天 " .. day_text .. " 执行一次"
+	end
+	return true, "关闭定时"
+end
+
+function DeployClient.DPLUITaskDetail:HandleUpdateErrorText(event)
+	local result, text = self:CheckTimerError()
+	self._task_timer_error_text.text = text
+	self._save_button.disabled = false
 end
 
 function DeployClient.DPLUITaskDetail:UpdateJobInfo(index)
@@ -238,6 +384,30 @@ function DeployClient.DPLUITaskDetail:HandleTaskSaveClick(event)
 	msg.task_name = self._task_name_input.text
 	msg.task_desc = self._task_desc_input.text
 	msg.web_hook = ALittle.String_SplitSepList(self._webhook_input.text, {"\r", "\n"})
+	msg.timer = {}
+	if self._task_timer_interval_radio.selected then
+		msg.timer.type = 1
+	elseif self._task_timer_point_radio.selected then
+		msg.timer.type = 2
+	else
+		msg.timer.type = 0
+	end
+	msg.timer.interval = ALittle.Math_ToInt(self._task_timer_interval_input.text)
+	if msg.timer.interval ~= nil then
+		if self._task_timer_interval_unit_dropdown.text == "天" then
+			msg.timer.interval = msg.timer.interval * (3600 * 24)
+		elseif self._task_timer_interval_unit_dropdown.text == "小时" then
+			msg.timer.interval = msg.timer.interval * (3600)
+		elseif self._task_timer_interval_unit_dropdown.text == "分钟" then
+			msg.timer.interval = msg.timer.interval * (60)
+		end
+	end
+	msg.timer.second_point = ALittle.Math_ToInt(self._task_timer_second_point_input.text)
+	msg.timer.minute_point = ALittle.Math_ToInt(self._task_timer_minute_point_input.text)
+	msg.timer.hour_point = ALittle.Math_ToInt(self._task_timer_hour_point_input.text)
+	msg.timer.day_point = ALittle.Math_ToInt(self._task_timer_day_point_input.text)
+	msg.timer.month_point = ALittle.Math_ToInt(self._task_timer_month_point_input.text)
+	msg.timer.year_point = ALittle.Math_ToInt(self._task_timer_year_point_input.text)
 	local error = ALittle.IMsgCommon.InvokeRPC(1149037254, msg_client, msg)
 	if error ~= nil then
 		g_AUITool:ShowNotice("提示", error)

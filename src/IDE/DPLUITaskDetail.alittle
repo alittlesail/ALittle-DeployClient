@@ -30,8 +30,30 @@ public class DPLUITaskDetail : ALittle.DisplayLayout
     private ALittle.DisplayObject _webhook_input;
     private ALittle.DisplayObject _save_button;
 
+    private ALittle.DisplayObject _task_timer_none_radio;
+    private ALittle.DisplayObject _task_timer_interval_radio;
+    private ALittle.DisplayObject _task_timer_point_radio;
+
+    private ALittle.DisplayObject _task_timer_interval_input;
+    private ALittle.DisplayObject _task_timer_interval_unit_dropdown;
+    private ALittle.DisplayObject _task_timer_year_point_input;
+    private ALittle.DisplayObject _task_timer_month_point_input;
+    private ALittle.DisplayObject _task_timer_day_point_input;
+    private ALittle.DisplayObject _task_timer_hour_point_input;
+    private ALittle.DisplayObject _task_timer_minute_point_input;
+    private ALittle.DisplayObject _task_timer_second_point_input;
+    private ALittle.DisplayObject _task_timer_error_text; // 定时器时间错误信息
+
     private ALittle.ScrollList _job_list;
     private ALittle.ScrollList _build_list;
+
+    public fun TCtor()
+    {
+        var timer_group = new ALittle.TextRadioButtonGroup();
+        this._task_timer_none_radio.group = timer_group;
+        this._task_timer_interval_radio.group = timer_group;
+        this._task_timer_point_radio.group = timer_group;
+    }
 
     public fun Init(TaskItemInfo task_item)
     {
@@ -60,6 +82,143 @@ public class DPLUITaskDetail : ALittle.DisplayLayout
         this._task_name_input.text = this._task_item.info.task_name;
         this._task_desc_input.text = this._task_item.info.task_desc;
         this._webhook_input.text = ALittle.String_Join(this._task_item.info.web_hook, "\n");
+
+        var timer = this._task_item.info.timer;
+        // 初始化数据
+        if (timer.type == null) timer.type = DeployServer.TaskTimerType.NONE;
+        if (timer.interval == null) timer.interval = 0;
+        if (timer.year_point == null) timer.year_point = 0;
+        if (timer.month_point == null) timer.month_point = 0;
+        if (timer.day_point == null) timer.day_point = 0;
+        if (timer.hour_point == null) timer.hour_point = 0;
+        if (timer.minute_point == null) timer.minute_point = 0;
+        if (timer.second_point == null) timer.second_point = 0;
+
+        if (this._task_item.info.timer.type == DeployServer.TaskTimerType.INTERVAL)
+        	this._task_timer_interval_radio.selected = true;
+        elseif (this._task_item.info.timer.type == DeployServer.TaskTimerType.POINT)
+        	this._task_timer_point_radio.selected = true;
+        else
+        	this._task_timer_none_radio.selected = true;
+
+        if (this._task_item.info.timer.interval % (3600 * 24) == 0)
+        {
+        	this._task_timer_interval_input.text = ALittle.Math_Floor(this._task_item.info.timer.interval / (3600 * 24));
+            this._task_timer_interval_unit_dropdown.text = "天";
+        }
+        elseif (this._task_item.info.timer.interval % 3600 == 0)
+        {
+        	this._task_timer_interval_input.text = ALittle.Math_Floor(this._task_item.info.timer.interval / 3600);
+            this._task_timer_interval_unit_dropdown.text = "小时";
+        }
+        elseif (this._task_item.info.timer.interval % 60 == 0)
+        {
+        	this._task_timer_interval_input.text = ALittle.Math_Floor(this._task_item.info.timer.interval / 60);
+            this._task_timer_interval_unit_dropdown.text = "分钟";
+        }
+        else
+        {
+        	this._task_timer_interval_input.text = this._task_item.info.timer.interval;
+            this._task_timer_interval_unit_dropdown.text = "秒";
+        }
+
+        this._task_timer_second_point_input.text = this._task_item.info.timer.second_point;
+        this._task_timer_minute_point_input.text = this._task_item.info.timer.minute_point;
+        this._task_timer_hour_point_input.text = this._task_item.info.timer.hour_point;
+        this._task_timer_day_point_input.text = this._task_item.info.timer.day_point;
+        this._task_timer_month_point_input.text = this._task_item.info.timer.month_point;
+        this._task_timer_year_point_input.text = this._task_item.info.timer.year_point;
+
+        var result, text = this.CheckTimerError();
+        this._task_timer_error_text.text = text;
+    }
+
+    private fun CheckTimerError() : bool, string
+    {
+        if (this._task_timer_interval_radio.selected)
+        {
+            var interval = ALittle.Math_ToInt(this._task_timer_interval_input.text);
+            if (interval == null || interval < 0)
+                return false, "间隔时间错误：请填写大于0的间隔时间";
+            return true, "任务将在每"..interval..this._task_timer_interval_unit_dropdown.text.."自动执行一次";
+        }
+
+        if (this._task_timer_point_radio.selected)
+        {
+            // 判断小时参数
+            var hour_point = ALittle.Math_ToInt(this._task_timer_hour_point_input.text);
+            if (hour_point == null || hour_point < 0 || hour_point > 23)
+                return false, "定时时间错误：小时数取值范围在[0,23]";
+            // 判断分钟参数
+            var minute_point = ALittle.Math_ToInt(this._task_timer_minute_point_input.text);
+            if (minute_point == null || minute_point < 0 || minute_point > 59)
+                return false, "定时时间错误：分钟数取值范围在[0,59]";
+            // 判断秒数参数
+            var second_point = ALittle.Math_ToInt(this._task_timer_second_point_input.text);
+            if (second_point == null || second_point < 0 || second_point > 59)
+                return false, "定时时间错误：秒数取值范围在[0,59]";
+            var day_text = hour_point.."时 "..minute_point.."分 "..second_point.."秒";
+
+            var year_point = ALittle.Math_ToInt(this._task_timer_year_point_input.text);
+            // 确定了年份，那么就确定了未来的一个时间点
+            if (year_point != null && year_point > 0)
+            {
+                // 判断月份参数
+                var month_point = ALittle.Math_ToInt(this._task_timer_month_point_input.text);
+                if (month_point == null || month_point < 1 || month_point > 12)
+                    return false, "定时时间错误：在确定"..year_point.."年的情况下，月份取值范围在[1,12]";
+                // 判断天数
+                var day_count = ALittle.Time_GetMonthDayCount(year_point, month_point);
+                var day_point = ALittle.Math_ToInt(this._task_timer_day_point_input.text);
+                if (day_point == null || day_point < 1 || day_point > day_count)
+                    return false, "定时时间错误：在确定"..year_point.."年"..month_point.."月的情况下，日期取值范围在[1,"..day_count.."]";
+
+                return true, "定时间为:"..year_point.."年 "..month_point.."月 "..day_point.."日 "..day_text.." 执行一次";
+            }
+
+            // 获取当前时间和年份
+            var cur_time = ALittle.Time_GetCurTime();
+            var cur_year = ALittle.Time_GetYear(cur_time);
+
+            // 确定了月份
+            var month_point = ALittle.Math_ToInt(this._task_timer_month_point_input.text);
+            if (month_point != null && month_point > 0)
+            {
+                var day_point = ALittle.Math_ToInt(this._task_timer_day_point_input.text);
+                if (day_point == null || day_point < 1 || day_point > 31)
+                    return false, "定时时间错误：在确定"..month_point.."月的情况下，日期取值范围在[1,31]";
+                if ((day_point == null || day_point < 1 || day_point > 31) && (month_point == 1 || month_point == 3 || month_point == 5 || month_point == 7 || month_point == 8 || month_point == 10 || month_point == 12))
+                	return false, "定时时间错误：在确定"..month_point.."月的情况下，日期取值范围在[1,31]";
+                if ((day_point == null || day_point < 1 || day_point > 30) && (month_point == 4 || month_point == 6 || month_point == 9 || month_point == 11))
+                	return false, "定时时间错误：在确定"..month_point.."月的情况下，日期取值范围在[1,30]";
+                if ((day_point == null || day_point < 1 || day_point > 29) && month_point == 2)
+                    return false, "定时时间错误：在确定"..month_point.."月的情况下，日期取值范围在[1,29]";
+                var ext_text = "";
+                if (day_point == 29 && month_point == 2) ext_text = "(如果"..month_point.."月没有"..day_point.."日则跳过)";
+                return true, "定时间为:每年"..month_point.."月 "..day_point.."日 "..day_text.." 执行一次"..ext_text;
+            }
+
+            // 确定了日期
+            var day_point = ALittle.Math_ToInt(this._task_timer_day_point_input.text);
+            if (day_point != null && day_point > 0)
+            {
+                if (day_point > 31) return false, "定时时间错误：日期取值范围最多在[1,31]";
+                var ext_text = "";
+                if (day_point >= 29) ext_text = "(如果当月没有"..day_point.."日则跳过)";
+                return true, "定时间为:每月 "..day_point.."日 "..day_text.." 执行一次"..ext_text;
+            }
+
+            return true, "定时间为:每天 "..day_text.." 执行一次";
+        }
+
+        return true, "关闭定时";
+    }
+
+    private fun HandleUpdateErrorText(ALittle.UIChangedEvent event)
+    {
+        var result, text = this.CheckTimerError();
+        this._task_timer_error_text.text = text;
+        this._save_button.disabled = false;
     }
 
     public fun UpdateJobInfo(int index)
@@ -148,6 +307,27 @@ public class DPLUITaskDetail : ALittle.DisplayLayout
         msg.task_name = this._task_name_input.text;
         msg.task_desc = this._task_desc_input.text;
         msg.web_hook = ALittle.String_SplitSepList(this._webhook_input.text, ["\r", "\n"]);
+        msg.timer = new DeployServer.TaskTimer();
+
+        if (this._task_timer_interval_radio.selected) msg.timer.type = DeployServer.TaskTimerType.INTERVAL;
+        elseif (this._task_timer_point_radio.selected) msg.timer.type = DeployServer.TaskTimerType.POINT;
+        else msg.timer.type = DeployServer.TaskTimerType.NONE;
+
+        msg.timer.interval = ALittle.Math_ToInt(this._task_timer_interval_input.text);
+        if (msg.timer.interval != null)
+        {
+            if (this._task_timer_interval_unit_dropdown.text == "天") msg.timer.interval *= 3600 * 24;
+            elseif (this._task_timer_interval_unit_dropdown.text == "小时") msg.timer.interval *= 3600;
+            elseif (this._task_timer_interval_unit_dropdown.text == "分钟") msg.timer.interval *= 60;
+        }
+
+        msg.timer.second_point = ALittle.Math_ToInt(this._task_timer_second_point_input.text);
+        msg.timer.minute_point = ALittle.Math_ToInt(this._task_timer_minute_point_input.text);
+        msg.timer.hour_point = ALittle.Math_ToInt(this._task_timer_hour_point_input.text);
+        msg.timer.day_point = ALittle.Math_ToInt(this._task_timer_day_point_input.text);
+        msg.timer.month_point = ALittle.Math_ToInt(this._task_timer_month_point_input.text);
+        msg.timer.year_point = ALittle.Math_ToInt(this._task_timer_year_point_input.text);
+
         var error = DeployServer.HandleC2SUpdateTaskInfo(msg_client, msg);
         if (error != null) g_AUITool.ShowNotice("提示", error);
     }
