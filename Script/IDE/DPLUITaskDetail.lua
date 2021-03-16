@@ -89,8 +89,8 @@ option_map = {}
 })
 ALittle.RegStruct(1232578034, "DeployServer.JobInfoDetail", {
 name = "DeployServer.JobInfoDetail", ns_name = "DeployServer", rl_name = "JobInfoDetail", hash_code = 1232578034,
-name_list = {"batch_dir","batch_cmd","batch_param","deepcopy_src","deepcopy_dst","deepcopy_ext","copyfile_src","copyfile_file","copyfile_dst","virtualkey_exepath","virtualkey_cmd","wait_p_exit_exe_path","wait_p_exit_max_time","createprocess_dir","createprocess_cmd","createprocess_param","killprocess_exe_path","r2r_resharper_exe_path","r2r_resharper_cache_path","r2r_resharper_output_path","r2r_resharper_sln_path","r2r_resharper_dotsettings_path","r2r_redmine_url","r2r_redmine_account","r2r_redmine_password","r2r_redmine_project_id","r2r_redmine_account_id","r2r_redmine_account_map","r2r_curl_exe_path","r2r_code_tool"},
-type_list = {"string","string","string","string","string","string","string","List<string>","string","string","List<string>","List<string>","int","string","string","string","List<string>","string","string","string","string","string","string","string","string","string","string","Map<string,int>","string","string"},
+name_list = {"batch_dir","batch_cmd","batch_param","deepcopy_src","deepcopy_dst","deepcopy_ext","copyfile_src","copyfile_file","copyfile_dst","virtualkey_exepath","virtualkey_cmd","wait_p_exit_exe_path","wait_p_exit_max_time","createprocess_dir","createprocess_cmd","createprocess_param","killprocess_exe_path","r2r_resharper_exe_path","r2r_resharper_cache_path","r2r_resharper_output_path","r2r_resharper_sln_path","r2r_resharper_dotsettings_path","r2r_redmine_url","r2r_redmine_account","r2r_redmine_password","r2r_redmine_project_id","r2r_redmine_account_id","r2r_redmine_account_map","r2r_curl_exe_path","r2r_code_tool","igg_chat_room_id","igg_chat_title","igg_chat_content"},
+type_list = {"string","string","string","string","string","string","string","List<string>","string","string","List<string>","List<string>","int","string","string","string","List<string>","string","string","string","string","string","string","string","string","string","string","Map<string,int>","string","string","string","string","string"},
 option_map = {}
 })
 ALittle.RegStruct(1149037254, "DeployServer.C2SUpdateTaskInfo", {
@@ -486,6 +486,8 @@ function DeployClient.DPLUITaskDetail:RefreshJobItem(job_item)
 		job_item._button.text = "[杀死进程] " .. job_item.info.job_name
 	elseif job_item.info.job_type == 8 then
 		job_item._button.text = "[代码检查] " .. job_item.info.job_name .. ":" .. job_item.info.detail.r2r_resharper_sln_path
+	elseif job_item.info.job_type == 9 then
+		job_item._button.text = "[IGGChat] " .. job_item.info.job_name .. ":" .. job_item.info.detail.igg_chat_title
 	end
 	if self._task_item.info.status == 0 then
 		job_item._status.text = ""
@@ -576,6 +578,8 @@ function DeployClient.DPLUITaskDetail:HandleModifyJob(info, index)
 		ui = "killprocess_job_dialog"
 	elseif info.info.job_type == 8 then
 		ui = "resharper_redmine_job_dialog"
+	elseif info.info.job_type == 9 then
+		ui = "igg_chat_job_dialog"
 	end
 	if ui ~= nil then
 		local dialog = DeployClient.g_Control:CreateControl(ui)
