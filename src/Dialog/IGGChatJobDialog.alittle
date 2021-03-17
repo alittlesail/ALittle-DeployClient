@@ -4,6 +4,7 @@ namespace DeployClient;
 public class IGGChatJobDialog : CommonJobDialog
 {
     private ALittle.ImageInput _chat_room_id;
+    private ALittle.ImageInput _chat_token;
     private ALittle.ImageInput _chat_title;
 	private ALittle.ImageEdit _chat_content;
 
@@ -14,12 +15,14 @@ public class IGGChatJobDialog : CommonJobDialog
         if (detail != null)
         {
             this._chat_room_id.text = detail.igg_chat_room_id;
+            this._chat_token.text = detail.igg_chat_token;
             this._chat_title.text = detail.igg_chat_title;
             this._chat_content.text = detail.igg_chat_content;
         }
         else
         {
             this._chat_room_id.text = "";
+            this._chat_token.text = "";
             this._chat_title.text = "";
             this._chat_content.text = "";
         }
@@ -29,6 +32,7 @@ public class IGGChatJobDialog : CommonJobDialog
     {
         var detail = new DeployServer.JobInfoDetail();
         detail.igg_chat_room_id = this._chat_room_id.text;
+        detail.igg_chat_token = this._chat_token.text;
         detail.igg_chat_title = this._chat_title.text;
         detail.igg_chat_content = this._chat_content.text;
         return detail;

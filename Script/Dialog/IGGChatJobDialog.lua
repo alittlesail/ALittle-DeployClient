@@ -18,10 +18,12 @@ end
 function DeployClient.IGGChatJobDialog:ShowDetail(detail)
 	if detail ~= nil then
 		self._chat_room_id.text = detail.igg_chat_room_id
+		self._chat_token.text = detail.igg_chat_token
 		self._chat_title.text = detail.igg_chat_title
 		self._chat_content.text = detail.igg_chat_content
 	else
 		self._chat_room_id.text = ""
+		self._chat_token.text = ""
 		self._chat_title.text = ""
 		self._chat_content.text = ""
 	end
@@ -30,6 +32,7 @@ end
 function DeployClient.IGGChatJobDialog:GetDetail()
 	local detail = {}
 	detail.igg_chat_room_id = self._chat_room_id.text
+	detail.igg_chat_token = self._chat_token.text
 	detail.igg_chat_title = self._chat_title.text
 	detail.igg_chat_content = self._chat_content.text
 	return detail
