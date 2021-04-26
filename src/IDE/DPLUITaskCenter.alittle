@@ -286,6 +286,7 @@ public class DPLUITaskCenter : ALittle.DisplayLayout
         if (job_info == null) return;
         job_info.status = msg.status;
         job_info.progress = msg.progress;
+        job_info.process_list = msg.process_list;
 
         if (task_info.detail != null) task_info.detail.UpdateJobInfo(msg.index);
     }

@@ -1,0 +1,33 @@
+
+namespace DeployClient;
+
+public class MonitorProcessJobDialog : CommonJobDialog
+{
+	private ALittle.ImageInput _exe_path;
+
+    private get type() : int { return DeployServer.JobType.MONITORPROCESS; }
+
+    private fun ShowDetail(DeployServer.JobInfoDetail detail)
+    {
+        if (detail != null)
+        {
+            this._exe_path.text = detail.monitorprocess_exe_path;
+        }
+        else
+        {
+            this._exe_path.text = "";
+        }
+    }
+
+    private fun GetDetail() : DeployServer.JobInfoDetail
+    {
+        var detail = new DeployServer.JobInfoDetail();
+        detail.monitorprocess_exe_path = this._exe_path.text;
+        return detail;
+    }
+
+    private async fun HandleExeBrowserClick(ALittle.UIClickEvent event)
+    {
+        this._exe_path.text = g_FileRemoteSelectDialog.ShowSelect();
+    }
+}

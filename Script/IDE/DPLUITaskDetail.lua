@@ -17,8 +17,8 @@ option_map = {}
 })
 ALittle.RegStruct(-2035971543, "DeployServer.D_JobInfo", {
 name = "DeployServer.D_JobInfo", ns_name = "DeployServer", rl_name = "D_JobInfo", hash_code = -2035971543,
-name_list = {"job_type","job_name","status","progress","detail"},
-type_list = {"int","string","int","double","DeployServer.JobInfoDetail"},
+name_list = {"job_type","job_name","status","progress","detail","process_list"},
+type_list = {"int","string","int","double","DeployServer.JobInfoDetail","List<DeployServer.D_ProcessInfo>"},
 option_map = {}
 })
 ALittle.RegStruct(-2031251578, "DeployServer.C2SCopyJob", {
@@ -89,8 +89,8 @@ option_map = {}
 })
 ALittle.RegStruct(1232578034, "DeployServer.JobInfoDetail", {
 name = "DeployServer.JobInfoDetail", ns_name = "DeployServer", rl_name = "JobInfoDetail", hash_code = 1232578034,
-name_list = {"batch_dir","batch_cmd","batch_param","deepcopy_src","deepcopy_dst","deepcopy_ext","copyfile_src","copyfile_file","copyfile_dst","virtualkey_exepath","virtualkey_cmd","wait_p_exit_exe_path","wait_p_exit_max_time","createprocess_dir","createprocess_cmd","createprocess_param","killprocess_exe_path","r2r_resharper_exe_path","r2r_resharper_cache_path","r2r_resharper_output_path","r2r_resharper_sln_path","r2r_resharper_dotsettings_path","r2r_redmine_url","r2r_redmine_account","r2r_redmine_password","r2r_redmine_project_id","r2r_redmine_account_id","r2r_redmine_account_map","r2r_curl_exe_path","r2r_code_tool","igg_chat_room_id","igg_chat_title","igg_chat_content","igg_chat_token"},
-type_list = {"string","string","string","string","string","string","string","List<string>","string","string","List<string>","List<string>","int","string","string","string","List<string>","string","string","string","string","string","string","string","string","string","string","Map<string,int>","string","string","string","string","string","string"},
+name_list = {"batch_dir","batch_cmd","batch_param","deepcopy_src","deepcopy_dst","deepcopy_ext","copyfile_src","copyfile_file","copyfile_dst","virtualkey_exepath","virtualkey_cmd","wait_p_exit_exe_path","wait_p_exit_max_time","createprocess_dir","createprocess_cmd","createprocess_param","killprocess_exe_path","r2r_resharper_exe_path","r2r_resharper_cache_path","r2r_resharper_output_path","r2r_resharper_sln_path","r2r_resharper_dotsettings_path","r2r_redmine_url","r2r_redmine_account","r2r_redmine_password","r2r_redmine_project_id","r2r_redmine_account_id","r2r_redmine_account_map","r2r_curl_exe_path","r2r_code_tool","igg_chat_room_id","igg_chat_title","igg_chat_content","igg_chat_token","monitorprocess_exe_path"},
+type_list = {"string","string","string","string","string","string","string","List<string>","string","string","List<string>","List<string>","int","string","string","string","List<string>","string","string","string","string","string","string","string","string","string","string","Map<string,int>","string","string","string","string","string","string","string"},
 option_map = {}
 })
 ALittle.RegStruct(1149037254, "DeployServer.C2SUpdateTaskInfo", {
@@ -133,6 +133,12 @@ ALittle.RegStruct(-616678126, "DeployServer.C2SMoveJob", {
 name = "DeployServer.C2SMoveJob", ns_name = "DeployServer", rl_name = "C2SMoveJob", hash_code = -616678126,
 name_list = {"task_id","job_index","target_index"},
 type_list = {"int","int","int"},
+option_map = {}
+})
+ALittle.RegStruct(15214192, "DeployServer.D_ProcessInfo", {
+name = "DeployServer.D_ProcessInfo", ns_name = "DeployServer", rl_name = "D_ProcessInfo", hash_code = 15214192,
+name_list = {"process_id","cpu","mem","vmem","io_read","io_write"},
+type_list = {"int","int","int","int","int","int"},
 option_map = {}
 })
 
@@ -427,6 +433,7 @@ function DeployClient.DPLUITaskDetail:ShowCreateMenu(job_index)
 	menu:AddItem("发送命令", Lua.Bind(self.HandleNewCommonJob, self, "sendvirtualkey_job_dialog", job_index))
 	menu:AddItem("等待进程退出", Lua.Bind(self.HandleNewCommonJob, self, "waitprocessexit_job_dialog", job_index))
 	menu:AddItem("创建进程", Lua.Bind(self.HandleNewCommonJob, self, "createprocess_job_dialog", job_index))
+	menu:AddItem("监视进程", Lua.Bind(self.HandleNewCommonJob, self, "monitorprocess_job_dialog", job_index))
 	menu:AddItem("杀死进程", Lua.Bind(self.HandleNewCommonJob, self, "killprocess_job_dialog", job_index))
 	menu:AddItem("代码检查", Lua.Bind(self.HandleNewCommonJob, self, "resharper_redmine_job_dialog", job_index))
 	menu:AddItem("IGGChat群通知", Lua.Bind(self.HandleNewCommonJob, self, "igg_chat_job_dialog", job_index))
@@ -489,6 +496,27 @@ function DeployClient.DPLUITaskDetail:RefreshJobItem(job_item)
 		job_item._button.text = "[代码检查] " .. job_item.info.job_name .. ":" .. job_item.info.detail.r2r_resharper_sln_path
 	elseif job_item.info.job_type == 9 then
 		job_item._button.text = "[IGGChat] " .. job_item.info.job_name .. ":" .. job_item.info.detail.igg_chat_title
+	elseif job_item.info.job_type == 10 then
+		local process_info = job_item.info.process_list[1]
+		if process_info == nil then
+			job_item._button.text = "[监视进程] " .. job_item.info.job_name .. ":进程不存在"
+		else
+			local content = "pid:" .. process_info.process_id
+			content = content .. " CPU:"
+			if process_info.cpu >= 0 then
+				content = content .. process_info.cpu
+			else
+				content = content .. "?"
+			end
+			content = content .. "%  mem:"
+			if process_info.mem >= 0 then
+				content = content .. ALittle.Math_Floor(process_info.vmem / 1024 / 1024)
+			else
+				content = content .. "?"
+			end
+			content = content .. "MB"
+			job_item._button.text = "[监视进程] " .. job_item.info.job_name .. ":" .. content
+		end
 	end
 	if self._task_item.info.status == 0 then
 		job_item._status.text = ""
@@ -581,6 +609,8 @@ function DeployClient.DPLUITaskDetail:HandleModifyJob(info, index)
 		ui = "resharper_redmine_job_dialog"
 	elseif info.info.job_type == 9 then
 		ui = "igg_chat_job_dialog"
+	elseif info.info.job_type == 10 then
+		ui = "monitorprocess_job_dialog"
 	end
 	if ui ~= nil then
 		local dialog = DeployClient.g_Control:CreateControl(ui)

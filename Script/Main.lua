@@ -52,9 +52,9 @@ function DeployClient.__Module_Setup(layer_group, control, module_base_path, scr
 	DeployClient.g_LayerGroup:AddChild(DeployClient.g_DialogLayer)
 	RequireFromPaths(script_base_path, "Utility/", {"FileRemoteSelectLayout.alittle", "FileRemoteSelectDialog.alittle"})
 	RequireFromPaths(script_base_path, "Dialog/", {"CommonJobDialog.alittle", "BatchJobDialog.alittle", "WaitProcessExitJobDialog.alittle"
-		, "SendVirtualKeyJobDialog.alittle", "ReSharperRedmineJobDialog.alittle", "KillProcessJobDialog.alittle"
-		, "IGGChatJobDialog.alittle", "DeepCopyJobDialog.alittle", "CreateProcessJobDialog.alittle"
-		, "CopyFileJobDialog.alittle"})
+		, "SendVirtualKeyJobDialog.alittle", "ReSharperRedmineJobDialog.alittle", "MonitorProcessJobDialog.alittle"
+		, "KillProcessJobDialog.alittle", "IGGChatJobDialog.alittle", "DeepCopyJobDialog.alittle"
+		, "CreateProcessJobDialog.alittle", "CopyFileJobDialog.alittle"})
 	RequireFromPaths(script_base_path, "IDE/", {"DPLUITaskDetail.alittle", "DPLUITaskCenter.alittle", "DPLUIMainMenu.alittle"
 		, "DPLUICenter.alittle", "DPLUIAccount.alittle", "DPLCenter.alittle"})
 	DeployClient.g_DPLCenter:Setup()

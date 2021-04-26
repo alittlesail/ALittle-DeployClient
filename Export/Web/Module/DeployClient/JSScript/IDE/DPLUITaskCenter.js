@@ -10,8 +10,8 @@ option_map : {}
 })
 ALittle.RegStruct(-2035971543, "DeployServer.D_JobInfo", {
 name : "DeployServer.D_JobInfo", ns_name : "DeployServer", rl_name : "D_JobInfo", hash_code : -2035971543,
-name_list : ["job_type","job_name","status","progress","detail"],
-type_list : ["int","string","int","double","DeployServer.JobInfoDetail"],
+name_list : ["job_type","job_name","status","progress","detail","process_list"],
+type_list : ["int","string","int","double","DeployServer.JobInfoDetail","List<DeployServer.D_ProcessInfo>"],
 option_map : {}
 })
 ALittle.RegStruct(-2015558870, "DeployServer.NMoveJob", {
@@ -52,8 +52,8 @@ option_map : {}
 })
 ALittle.RegStruct(1462309182, "DeployServer.NJobStatus", {
 name : "DeployServer.NJobStatus", ns_name : "DeployServer", rl_name : "NJobStatus", hash_code : 1462309182,
-name_list : ["task_id","index","status","progress"],
-type_list : ["int","int","int","double"],
+name_list : ["task_id","index","status","progress","process_list"],
+type_list : ["int","int","int","double","List<DeployServer.D_ProcessInfo>"],
 option_map : {}
 })
 ALittle.RegStruct(-1347278145, "ALittle.UIButtonEvent", {
@@ -82,8 +82,8 @@ option_map : {}
 })
 ALittle.RegStruct(1232578034, "DeployServer.JobInfoDetail", {
 name : "DeployServer.JobInfoDetail", ns_name : "DeployServer", rl_name : "JobInfoDetail", hash_code : 1232578034,
-name_list : ["batch_dir","batch_cmd","batch_param","deepcopy_src","deepcopy_dst","deepcopy_ext","copyfile_src","copyfile_file","copyfile_dst","virtualkey_exepath","virtualkey_cmd","wait_p_exit_exe_path","wait_p_exit_max_time","createprocess_dir","createprocess_cmd","createprocess_param","killprocess_exe_path","r2r_resharper_exe_path","r2r_resharper_cache_path","r2r_resharper_output_path","r2r_resharper_sln_path","r2r_resharper_dotsettings_path","r2r_redmine_url","r2r_redmine_account","r2r_redmine_password","r2r_redmine_project_id","r2r_redmine_account_id","r2r_redmine_account_map","r2r_curl_exe_path","r2r_code_tool","igg_chat_room_id","igg_chat_title","igg_chat_content","igg_chat_token"],
-type_list : ["string","string","string","string","string","string","string","List<string>","string","string","List<string>","List<string>","int","string","string","string","List<string>","string","string","string","string","string","string","string","string","string","string","Map<string,int>","string","string","string","string","string","string"],
+name_list : ["batch_dir","batch_cmd","batch_param","deepcopy_src","deepcopy_dst","deepcopy_ext","copyfile_src","copyfile_file","copyfile_dst","virtualkey_exepath","virtualkey_cmd","wait_p_exit_exe_path","wait_p_exit_max_time","createprocess_dir","createprocess_cmd","createprocess_param","killprocess_exe_path","r2r_resharper_exe_path","r2r_resharper_cache_path","r2r_resharper_output_path","r2r_resharper_sln_path","r2r_resharper_dotsettings_path","r2r_redmine_url","r2r_redmine_account","r2r_redmine_password","r2r_redmine_project_id","r2r_redmine_account_id","r2r_redmine_account_map","r2r_curl_exe_path","r2r_code_tool","igg_chat_room_id","igg_chat_title","igg_chat_content","igg_chat_token","monitorprocess_exe_path"],
+type_list : ["string","string","string","string","string","string","string","List<string>","string","string","List<string>","List<string>","int","string","string","string","List<string>","string","string","string","string","string","string","string","string","string","string","Map<string,int>","string","string","string","string","string","string","string"],
 option_map : {}
 })
 ALittle.RegStruct(-1164681133, "DeployServer.NDeleteTask", {
@@ -180,6 +180,12 @@ ALittle.RegStruct(-173628832, "DeployServer.NModifyJob", {
 name : "DeployServer.NModifyJob", ns_name : "DeployServer", rl_name : "NModifyJob", hash_code : -173628832,
 name_list : ["task_id","job_index","job_info"],
 type_list : ["int","int","DeployServer.D_JobInfo"],
+option_map : {}
+})
+ALittle.RegStruct(15214192, "DeployServer.D_ProcessInfo", {
+name : "DeployServer.D_ProcessInfo", ns_name : "DeployServer", rl_name : "D_ProcessInfo", hash_code : 15214192,
+name_list : ["process_id","cpu","mem","vmem","io_read","io_write"],
+type_list : ["int","int","int","int","int","int"],
 option_map : {}
 })
 
@@ -451,6 +457,7 @@ DeployClient.DPLUITaskCenter = JavaScript.Class(ALittle.DisplayLayout, {
 		}
 		job_info.status = msg.status;
 		job_info.progress = msg.progress;
+		job_info.process_list = msg.process_list;
 		if (task_info.detail !== undefined) {
 			task_info.detail.UpdateJobInfo(msg.index);
 		}

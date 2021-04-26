@@ -346,6 +346,7 @@ public class DPLUITaskDetail : ALittle.DisplayLayout
         menu.AddItem("发送命令", bind(this.HandleNewCommonJob, this, "sendvirtualkey_job_dialog", job_index));
         menu.AddItem("等待进程退出", bind(this.HandleNewCommonJob, this, "waitprocessexit_job_dialog", job_index));
         menu.AddItem("创建进程", bind(this.HandleNewCommonJob, this, "createprocess_job_dialog", job_index));
+        menu.AddItem("监视进程", bind(this.HandleNewCommonJob, this, "monitorprocess_job_dialog", job_index));
         menu.AddItem("杀死进程", bind(this.HandleNewCommonJob, this, "killprocess_job_dialog", job_index));
         menu.AddItem("代码检查", bind(this.HandleNewCommonJob, this, "resharper_redmine_job_dialog", job_index));
         menu.AddItem("IGGChat群通知", bind(this.HandleNewCommonJob, this, "igg_chat_job_dialog", job_index));
@@ -415,6 +416,28 @@ public class DPLUITaskDetail : ALittle.DisplayLayout
         	job_item._button.text = "[代码检查] "..job_item.info.job_name..":"..job_item.info.detail.r2r_resharper_sln_path;
         elseif (job_item.info.job_type == DeployServer.JobType.IGG_CHAT)
         	job_item._button.text = "[IGGChat] "..job_item.info.job_name..":"..job_item.info.detail.igg_chat_title;
+        elseif (job_item.info.job_type == DeployServer.JobType.MONITORPROCESS)
+        {
+            var process_info = job_item.info.process_list[1];
+            if (process_info == null)
+                job_item._button.text = "[监视进程] "..job_item.info.job_name..":进程不存在";
+            else
+            {
+                var content = "pid:"..process_info.process_id;
+                content = content.." CPU:";
+                if (process_info.cpu >= 0)
+                	content = content..process_info.cpu;
+                else
+                    content = content.."?";
+                content = content.."%  mem:";
+                if (process_info.mem >= 0)
+                    content = content..ALittle.Math_Floor(process_info.vmem / 1024 / 1024);
+                else
+                    content = content.."?";
+                content = content.."MB";
+                job_item._button.text = "[监视进程] "..job_item.info.job_name..":"..content;
+            }   	
+        }
 
         if (this._task_item.info.status == DeployServer.TaskStatus.IDLE)
             job_item._status.text = "";
@@ -516,6 +539,8 @@ public class DPLUITaskDetail : ALittle.DisplayLayout
             ui = "resharper_redmine_job_dialog";
         elseif (info.info.job_type == DeployServer.JobType.IGG_CHAT)
             ui = "igg_chat_job_dialog";
+        elseif (info.info.job_type == DeployServer.JobType.MONITORPROCESS)
+            ui = "monitorprocess_job_dialog";
 
         if (ui != null)
         {
