@@ -43,13 +43,27 @@ DeployClient.__Module_Setup = async function(layer_group, control, module_base_p
 	DeployClient.g_DialogLayer.width_type = 4;
 	DeployClient.g_DialogLayer.height_type = 4;
 	DeployClient.g_LayerGroup.AddChild(DeployClient.g_DialogLayer);
-	await RequireFromPaths(script_base_path, "Utility/", ["FileRemoteSelectLayout.alittle", "FileRemoteSelectDialog.alittle"]);
-	await RequireFromPaths(script_base_path, "Dialog/", ["CommonJobDialog.alittle", "BatchJobDialog.alittle", "WaitProcessExitJobDialog.alittle"
-		, "SendVirtualKeyJobDialog.alittle", "ReSharperRedmineJobDialog.alittle", "MonitorProcessJobDialog.alittle"
-		, "KillProcessJobDialog.alittle", "IGGChatJobDialog.alittle", "DeepCopyJobDialog.alittle"
-		, "CreateProcessJobDialog.alittle", "CopyFileJobDialog.alittle"]);
-	await RequireFromPaths(script_base_path, "IDE/", ["DPLUITaskDetail.alittle", "DPLUITaskCenter.alittle", "DPLUIMainMenu.alittle"
-		, "DPLUICenter.alittle", "DPLUIAccount.alittle", "DPLCenter.alittle"]);
+	let require = ALittle.NewObject(ALittle.Require);
+	require.AddPaths(script_base_path, "Utility/", [["FileRemoteSelectDialog"]
+		,["FileRemoteSelectLayout"]]);
+	require.AddPaths(script_base_path, "Dialog/", [["BatchJobDialog","CommonJobDialog"]
+		,["CommonJobDialog"]
+		,["CopyFileJobDialog","CommonJobDialog"]
+		,["CreateProcessJobDialog","CommonJobDialog"]
+		,["DeepCopyJobDialog","CommonJobDialog"]
+		,["IGGChatJobDialog","CommonJobDialog"]
+		,["KillProcessJobDialog","CommonJobDialog"]
+		,["MonitorProcessJobDialog","CommonJobDialog"]
+		,["ReSharperRedmineJobDialog","CommonJobDialog"]
+		,["SendVirtualKeyJobDialog","CommonJobDialog"]
+		,["WaitProcessExitJobDialog","CommonJobDialog"]]);
+	require.AddPaths(script_base_path, "IDE/", [["DPLCenter"]
+		,["DPLUIAccount"]
+		,["DPLUICenter"]
+		,["DPLUIMainMenu"]
+		,["DPLUITaskCenter"]
+		,["DPLUITaskDetail"]]);
+	await require.Start();
 	await DeployClient.g_DPLCenter.Setup();
 }
 
