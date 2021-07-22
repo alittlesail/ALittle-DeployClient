@@ -63,7 +63,6 @@ window.RequireCEngine = function(base_path) {
 		await Require(base_path, "CEngine/UISystem/Complex/RichEdit");
 		await Require(base_path, "CEngine/UISystem/Complex/RichInput");
 		await Require(base_path, "CEngine/UISystem/Complex/ScrollList");
-		await Require(base_path, "CEngine/UISystem/Complex/ScrollButton");
 		await Require(base_path, "CEngine/UISystem/Special/SpringTextButton");
 		await Require(base_path, "CEngine/UISystem/Tile/TileDefine");
 		await Require(base_path, "CEngine/UISystem/Plugin/SpringButton");
@@ -2772,13 +2771,21 @@ option_map : {}
 })
 ALittle.RegStruct(384201948, "ALittle.ChunkInfo", {
 name : "ALittle.ChunkInfo", ns_name : "ALittle", rl_name : "ChunkInfo", hash_code : 384201948,
-name_list : ["file_path","callback","channel","volume","mute"],
-type_list : ["string","Functor<(string,int)>","int","double","bool"],
+name_list : ["file_path","callback","channel","volume","mute","instance"],
+type_list : ["string","Functor<(string,int)>","int","double","bool","native PIXI.IMediaInstance"],
 option_map : {}
 })
 
 ALittle.AudioSystem = JavaScript.Class(undefined, {
 	Ctor : function() {
+		this._chunk_creator_id = 0;
+		this._file_map = {};
+		this._stream_sample_rate = 8000;
+		this._stream_sample_channels = 1;
+		this._stream_left_sample = [];
+		this._stream_left_sample_len = 0;
+		this._stream_right_sample = [];
+		this._stream_right_sample_len = 0;
 		this._chunk_map = new Map();
 		this._app_background = false;
 		this._all_mute = false;
@@ -2788,7 +2795,6 @@ ALittle.AudioSystem = JavaScript.Class(undefined, {
 		A_OtherSystem.AddEventListener(___all_struct.get(760325696), this, this.HandleDidEnterForeground);
 	},
 	Setup : function(sample_rate, channels) {
-		__CPPAPI_AudioSystem.Setup(sample_rate, channels);
 	},
 	HandleDidEnterBackground : function(event) {
 		this._app_background = true;
@@ -2803,7 +2809,9 @@ ALittle.AudioSystem = JavaScript.Class(undefined, {
 		if (info.mute || this._app_background || this._all_mute) {
 			real_volume = 0;
 		}
-		__CPPAPI_AudioSystem.SetChannelVolume(info.channel, real_volume);
+		if (info.instance.set !== undefined) {
+			info.instance.set("volume", real_volume);
+		}
 	},
 	UpdateStreamVolume : function() {
 		let real_volume = this._stream_volume;
@@ -2830,28 +2838,39 @@ ALittle.AudioSystem = JavaScript.Class(undefined, {
 		return this._all_mute;
 	},
 	AddChunkCache : function(file_path) {
-		__CPPAPI_AudioSystem.AddChunkCache(file_path);
+		PIXI.sound.add(file_path, file_path);
+		this._file_map[file_path] = true;
 	},
 	RemoveChunkCache : function(file_path) {
-		__CPPAPI_AudioSystem.RemoveChunkCache(file_path);
+		PIXI.sound.remove(file_path);
+		this._file_map[file_path] = false;
 	},
 	StartChannel : function(file_path, loop, callback) {
 		if (loop === undefined) {
 			loop = 1;
 		}
-		let channel = __CPPAPI_AudioSystem.StartChannel(file_path, loop);
-		if (channel < 0) {
-			return -1;
+		{
+			if (this._file_map[file_path] === undefined) {
+				this._file_map[file_path] = true;
+				PIXI.sound.add(file_path, file_path);
+			}
+			this._chunk_creator_id = this._chunk_creator_id + (1);
+			let channel = this._chunk_creator_id;
+			let options = {};
+			options.loop = loop !== 1;
+			options.complete = this.HandleAudioChannelStoppedEvent.bind(this, channel);
+			let instance = PIXI.sound.play(file_path, options);
+			let info = {};
+			info.file_path = file_path;
+			info.callback = callback;
+			info.channel = channel;
+			info.instance = instance;
+			info.volume = 1;
+			info.mute = false;
+			this._chunk_map.set(channel, info);
+			this.UpdateChannelVolume(info);
+			return channel;
 		}
-		let info = {};
-		info.file_path = file_path;
-		info.callback = callback;
-		info.channel = channel;
-		info.volume = __CPPAPI_AudioSystem.GetChannelVolume(channel);
-		info.mute = false;
-		this._chunk_map.set(channel, info);
-		this.UpdateChannelVolume(info);
-		return channel;
 	},
 	StopChannel : function(channel) {
 		let info = this._chunk_map.get(channel);
@@ -2859,7 +2878,7 @@ ALittle.AudioSystem = JavaScript.Class(undefined, {
 			return;
 		}
 		this._chunk_map.delete(channel);
-		__CPPAPI_AudioSystem.StopChannel(channel);
+		info.instance.stop();
 	},
 	SetChannelMute : function(channel, mute) {
 		let info = this._chunk_map.get(channel);
@@ -2906,13 +2925,81 @@ ALittle.AudioSystem = JavaScript.Class(undefined, {
 		info.callback(info.file_path, info.channel);
 	},
 	StartStream : function(sample_rate, channels) {
-		return __CPPAPI_AudioSystem.StartStream(sample_rate, channels);
+		this.StopStream();
+		this._stream_sample_rate = sample_rate;
+		this._stream_sample_channels = channels;
+		{
+			let options = {};
+			options.sampleRate = sample_rate;
+			if (AudioContext !== undefined) {
+				this._audio_context = new AudioContext(options);
+			} else if (webkitAudioContext !== undefined) {
+				this._audio_context = new webkitAudioContext(options);
+			} else {
+				return false;
+			}
+			this._audio_script_node = this._audio_context.createScriptProcessor(4096, 0, channels);
+			this._audio_script_node.onaudioprocess = this.OnAudioProcess.bind(this);
+			this._audio_script_node.connect(this._audio_context.destination);
+			return true;
+		}
+	},
+	OnAudioProcess : function(event) {
+		let left_buffer = event.outputBuffer.getChannelData(0);
+		let right_buffer = event.outputBuffer.getChannelData(1);
+		if (this._stream_sample_channels >= 1) {
+			let length = left_buffer.length;
+			let buffer = left_buffer;
+			if (length > this._stream_left_sample_len) {
+				for (let i = 1; i <= length; i += 1) {
+					buffer[i - 1] = 0;
+				}
+				return;
+			}
+			for (let i = 1; i <= length; i += 1) {
+				buffer[i - 1] = this._stream_left_sample[i - 1] / 32768;
+			}
+			for (let i = length + 1; i <= this._stream_left_sample_len; i += 1) {
+				this._stream_left_sample[i - length - 1] = this._stream_left_sample[i - 1];
+			}
+			this._stream_left_sample_len = this._stream_left_sample_len - (length);
+		}
+		if (this._stream_sample_channels >= 2) {
+			let length = right_buffer.length;
+			let buffer = right_buffer;
+			if (length > this._stream_right_sample_len) {
+				for (let i = 1; i <= length; i += 1) {
+					buffer[i - 1] = 0;
+				}
+				return;
+			}
+			for (let i = 1; i <= length; i += 1) {
+				buffer[i - 1] = this._stream_right_sample[i - 1] / 32768;
+			}
+			for (let i = length + 1; i <= this._stream_right_sample_len; i += 1) {
+				this._stream_right_sample[i - length - 1] = this._stream_right_sample[i - 1];
+			}
+			this._stream_right_sample_len = this._stream_right_sample_len - (length);
+		}
 	},
 	PushStreamSample : function(left_sample, right_sample) {
-		__CPPAPI_AudioSystem.PushStreamSample(left_sample, right_sample);
+		{
+			this._stream_left_sample_len = this._stream_left_sample_len + (1);
+			this._stream_left_sample[this._stream_left_sample_len - 1] = left_sample;
+			this._stream_right_sample_len = this._stream_right_sample_len + (1);
+			this._stream_right_sample[this._stream_right_sample_len - 1] = right_sample;
+		}
 	},
 	StopStream : function() {
-		__CPPAPI_AudioSystem.StopStream();
+		if (this._audio_context !== undefined) {
+			if (this._audio_script_node !== undefined) {
+				this._audio_script_node.disconnect(this._audio_context.destination);
+				this._audio_script_node.onaudioprocess = undefined;
+				this._audio_script_node = undefined;
+			}
+			this._audio_context.close();
+			this._audio_context = undefined;
+		}
 	},
 	SetStreamMute : function(mute) {
 		if (this._stream_mute === mute) {
@@ -3558,22 +3645,10 @@ ALittle.LoopAttribute = JavaScript.Class(ALittle.LoopObject, {
 		this._total_delay_time = delay_time;
 		this._accumulate_count = 0;
 		this._accumulate_delay_time = 0;
-		this._complete_callback = undefined;
-	},
-	get complete_callback() {
-		return this._complete_callback;
-	},
-	set complete_callback(value) {
-		this._complete_callback = value;
 	},
 	Reset : function() {
 		this._accumulate_count = 0;
 		this._accumulate_delay_time = 0;
-	},
-	Completed : function() {
-		if (this._complete_callback !== undefined) {
-			this._complete_callback();
-		}
 	},
 	IsCompleted : function() {
 		return this._accumulate_count >= 1;
@@ -3605,15 +3680,17 @@ ALittle.LoopAttribute = JavaScript.Class(ALittle.LoopObject, {
 		if (this._accumulate_delay_time < this._total_delay_time) {
 			this._accumulate_delay_time = this._accumulate_delay_time + (frame_time);
 			if (this._accumulate_delay_time < this._total_delay_time) {
-				return;
+				return 0;
 			}
+			frame_time = this._accumulate_delay_time - this._total_delay_time;
 			this._accumulate_delay_time = this._total_delay_time;
 		}
 		if (this._accumulate_count >= 1) {
-			return;
+			return frame_time;
 		}
 		this._accumulate_count = 1;
 		this._target[this._property] = this._target_value;
+		return frame_time;
 	},
 }, "ALittle.LoopAttribute");
 
@@ -3647,12 +3724,6 @@ ALittle.LoopLinear = JavaScript.Class(ALittle.LoopObject, {
 		this._complete_callback = undefined;
 		this._speed = undefined;
 		this._init_value = undefined;
-	},
-	get complete_callback() {
-		return this._complete_callback;
-	},
-	set complete_callback(value) {
-		this._complete_callback = value;
 	},
 	get speed() {
 		if (this._speed !== undefined) {
@@ -3700,11 +3771,6 @@ ALittle.LoopLinear = JavaScript.Class(ALittle.LoopObject, {
 	IsCompleted : function() {
 		return this._accumulate_time >= this._total_time;
 	},
-	Completed : function() {
-		if (this._complete_callback !== undefined) {
-			this._complete_callback();
-		}
-	},
 	SetCompleted : function() {
 		if (this._accumulate_time >= this._total_time) {
 			return;
@@ -3715,7 +3781,7 @@ ALittle.LoopLinear = JavaScript.Class(ALittle.LoopObject, {
 		if (this._accumulate_delay_time < this._total_delay_time) {
 			this._accumulate_delay_time = this._accumulate_delay_time + (frame_time);
 			if (this._accumulate_delay_time < this._total_delay_time) {
-				return;
+				return 0;
 			}
 			frame_time = this._accumulate_delay_time - this._total_delay_time;
 			this._accumulate_delay_time = this._total_delay_time;
@@ -3724,14 +3790,18 @@ ALittle.LoopLinear = JavaScript.Class(ALittle.LoopObject, {
 			this._init_value = this._target[this._property];
 		}
 		this._accumulate_time = this._accumulate_time + (frame_time);
-		if (this._accumulate_time > this._total_time) {
+		if (this._accumulate_time >= this._total_time) {
+			frame_time = this._accumulate_time - this._total_time;
 			this._accumulate_time = this._total_time;
+		} else {
+			frame_time = 0;
 		}
 		let current_value = (this._accumulate_time * this._target_value + (this._total_time - this._accumulate_time) * this._init_value) / this._total_time;
 		this._target[this._property] = current_value;
 		if (this._func !== undefined) {
 			this._func();
 		}
+		return frame_time;
 	},
 }, "ALittle.LoopLinear");
 
@@ -3763,23 +3833,11 @@ ALittle.LoopRit = JavaScript.Class(ALittle.LoopObject, {
 		}
 		this._property = property;
 		this._init_value = undefined;
-		this._complete_callback = undefined;
-	},
-	get complete_callback() {
-		return this._complete_callback;
-	},
-	set complete_callback(value) {
-		this._complete_callback = value;
 	},
 	Reset : function() {
 		this._accumulate_time = 0;
 		this._accumulate_delay_time = 0;
 		this._init_value = undefined;
-	},
-	Completed : function() {
-		if (this._complete_callback !== undefined) {
-			this._complete_callback();
-		}
 	},
 	IsCompleted : function() {
 		return this._accumulate_time >= this._total_time;
@@ -3819,7 +3877,7 @@ ALittle.LoopRit = JavaScript.Class(ALittle.LoopObject, {
 		if (this._accumulate_delay_time < this._total_delay_time) {
 			this._accumulate_delay_time = this._accumulate_delay_time + (frame_time);
 			if (this._accumulate_delay_time < this._total_delay_time) {
-				return;
+				return 0;
 			}
 			frame_time = this._accumulate_delay_time - this._total_delay_time;
 			this._accumulate_delay_time = this._total_delay_time;
@@ -3828,14 +3886,18 @@ ALittle.LoopRit = JavaScript.Class(ALittle.LoopObject, {
 			this._init_value = this._target[this._property];
 		}
 		this._accumulate_time = this._accumulate_time + (frame_time);
-		if (this._accumulate_time > this._total_time) {
+		if (this._accumulate_time >= this._total_time) {
+			frame_time = this._accumulate_time - this._total_time;
 			this._accumulate_time = this._total_time;
+		} else {
+			frame_time = 0;
 		}
 		let current_value = (this._target_value - this._init_value) * ALittle.Math_Sin((this._accumulate_time / this._total_time) * 1.57) + this._init_value;
 		this._target[this._property] = current_value;
 		if (this._func !== undefined) {
 			this._func();
 		}
+		return frame_time;
 	},
 }, "ALittle.LoopRit");
 
@@ -6577,7 +6639,7 @@ ALittle.TextEdit = JavaScript.Class(ALittle.DisplayObject, {
 	Redraw : function() {
 		this._show.NeedDraw();
 	},
-	Update : function() {
+	Update : function(frame_time) {
 		if (this._is_selecting === false) {
 			this._current_flash_alpha = this._current_flash_alpha + this._current_flash_dir;
 			if ((this._current_flash_dir < 0 && this._current_flash_alpha < -0.05) || (this._current_flash_dir > 0 && this._current_flash_alpha > 1.5)) {
@@ -6761,9 +6823,9 @@ ALittle.TextEdit = JavaScript.Class(ALittle.DisplayObject, {
 	HandleFocusIn : function(event) {
 		this._show.ShowCursor(true);
 		if (this._loop === undefined) {
-			this._loop = ALittle.NewObject(ALittle.LoopFunction, this.Update.bind(this), -1, 1, 1);
+			this._loop = ALittle.NewObject(ALittle.LoopFrame, this.Update.bind(this));
 		}
-		A_LoopSystem.AddUpdater(this._loop);
+		this._loop.Start();
 		if (this._editable) {
 			let [global_x, global_y] = this.LocalToGlobal();
 			global_x = global_x + (this.cursor_x);
@@ -6782,7 +6844,10 @@ ALittle.TextEdit = JavaScript.Class(ALittle.DisplayObject, {
 		this._show.SetDisabled(!this._move_in);
 		this._is_selecting = false;
 		this._show.ShowCursor(false);
-		A_LoopSystem.RemoveUpdater(this._loop);
+		if (this._loop !== undefined) {
+			this._loop.Stop();
+			this._loop = undefined;
+		}
 		ALittle.System_CloseIME();
 		if (this.text === "") {
 			if (this._default_text === undefined) {
@@ -7181,7 +7246,7 @@ ALittle.TextInput = JavaScript.Class(ALittle.DisplayObject, {
 	get default_text_alpha() {
 		return this._default_text_alpha;
 	},
-	Update : function() {
+	Update : function(frame_time) {
 		if (this._is_selecting === false) {
 			this._current_flash_alpha = this._current_flash_alpha + this._current_flash_dir;
 			if ((this._current_flash_dir < 0 && this._current_flash_alpha < -0.05) || (this._current_flash_dir > 0 && this._current_flash_alpha > 1.5)) {
@@ -7327,9 +7392,9 @@ ALittle.TextInput = JavaScript.Class(ALittle.DisplayObject, {
 	HandleFocusIn : function(event) {
 		this._show.ShowCursor(true);
 		if (this._loop === undefined) {
-			this._loop = ALittle.NewObject(ALittle.LoopFunction, this.Update.bind(this), -1, 1, 1);
+			this._loop = ALittle.NewObject(ALittle.LoopFrame, this.Update.bind(this));
 		}
-		A_LoopSystem.AddUpdater(this._loop);
+		this._loop.Start();
 		if (this._editable) {
 			let [global_x, global_y] = this.LocalToGlobal();
 			ALittle.System_SetIMERect(__floor(global_x), __floor(global_y), __floor(this._width * this.scale_x), __floor(this._height * this.scale_y) + this._ims_padding);
@@ -7346,7 +7411,10 @@ ALittle.TextInput = JavaScript.Class(ALittle.DisplayObject, {
 		this._show.SetDisabled(!this._move_in);
 		this._is_selecting = false;
 		this._show.ShowCursor(false);
-		A_LoopSystem.RemoveUpdater(this._loop);
+		if (this._loop !== undefined) {
+			this._loop.Stop();
+			this._loop = undefined;
+		}
 		ALittle.System_CloseIME();
 		if (this.text === "") {
 			if (this._default_text === undefined) {
@@ -12910,7 +12978,7 @@ ALittle.ScrollScreen = JavaScript.Class(ALittle.DisplayGroup, {
 			}
 			A_LoopSystem.RemoveUpdater(this._x_type_dispatch);
 			if (event_dispatch !== undefined) {
-				this._x_type_dispatch = ALittle.NewObject(ALittle.LoopFunction, event_dispatch, 1, 0, 300);
+				this._x_type_dispatch = ALittle.NewObject(ALittle.LoopTimer, event_dispatch, 300);
 				A_LoopSystem.AddUpdater(this._x_type_dispatch);
 			}
 			if (this._open_extends_drag === false) {
@@ -12970,7 +13038,7 @@ ALittle.ScrollScreen = JavaScript.Class(ALittle.DisplayGroup, {
 			}
 			A_LoopSystem.RemoveUpdater(this._y_type_dispatch);
 			if (event_dispatch !== undefined) {
-				this._y_type_dispatch = ALittle.NewObject(ALittle.LoopFunction, event_dispatch, 1, 0, 300);
+				this._y_type_dispatch = ALittle.NewObject(ALittle.LoopTimer, event_dispatch, 300);
 				A_LoopSystem.AddUpdater(this._y_type_dispatch);
 			}
 			if (this._open_extends_drag === false) {
@@ -13001,7 +13069,11 @@ ALittle.ScrollScreen = JavaScript.Class(ALittle.DisplayGroup, {
 		if (this._clip_loop !== undefined && this._clip_loop._user_data === undefined) {
 			return;
 		}
-		this._clip_loop = ALittle.NewObject(ALittle.LoopFunction, this.RefreshClipDisLineImpl.bind(this, h_move, v_move), 1, 0, 1);
+		if (this._clip_loop !== undefined) {
+			this._clip_loop.Stop();
+			this._clip_loop = undefined;
+		}
+		this._clip_loop = ALittle.NewObject(ALittle.LoopTimer, this.RefreshClipDisLineImpl.bind(this, h_move, v_move), 1);
 		this._clip_loop._user_data = v_move;
 		A_LoopSystem.AddUpdater(this._clip_loop);
 	},
@@ -13727,7 +13799,8 @@ ALittle.ImagePlay = JavaScript.Class(ALittle.DisplayLayout, {
 			v.visible = false;
 		}
 		this.PlayUpdate();
-		this._play_loop = ALittle.NewObject(ALittle.LoopFunction, this.PlayUpdate.bind(this), -1, this._interval, 0);
+		let loop = ALittle.NewObject(ALittle.LoopTimer, this.PlayUpdate.bind(this), this._interval);
+		this._play_loop = ALittle.NewObject(ALittle.LoopRepeat, loop, -1);
 		A_WeakLoopSystem.AddUpdater(this._play_loop);
 	},
 	Stop : function() {
@@ -13781,7 +13854,8 @@ ALittle.SpritePlay = JavaScript.Class(ALittle.Sprite, {
 		this._row_index = 1;
 		this._col_index = 1;
 		this.PlayUpdate();
-		this._play_loop = ALittle.NewObject(ALittle.LoopFunction, this.PlayUpdate.bind(this), -1, this._interval, 0);
+		let loop = ALittle.NewObject(ALittle.LoopTimer, this.PlayUpdate.bind(this), this._interval);
+		this._play_loop = ALittle.NewObject(ALittle.LoopRepeat, loop, -1);
 		A_WeakLoopSystem.AddUpdater(this._play_loop);
 	},
 	Stop : function() {
@@ -14010,7 +14084,8 @@ ALittle.FramePlay = JavaScript.Class(ALittle.DisplayLayout, {
 		this._play_loop_index = 0;
 		this.HideAllChild();
 		this.PlayUpdate();
-		this._play_loop = ALittle.NewObject(ALittle.LoopFunction, this.PlayUpdateLoop.bind(this), -1, this._interval, 0);
+		let loop = ALittle.NewObject(ALittle.LoopTimer, this.PlayUpdateLoop.bind(this), this._interval);
+		this._play_loop = ALittle.NewObject(ALittle.LoopRepeat, loop, -1);
 		A_WeakLoopSystem.AddUpdater(this._play_loop);
 	},
 	Stop : function() {
