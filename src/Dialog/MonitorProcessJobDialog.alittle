@@ -4,6 +4,7 @@ namespace DeployClient;
 public class MonitorProcessJobDialog : CommonJobDialog
 {
 	private ALittle.ImageInput _exe_path;
+    private ALittle.TextCheckButton _auto_start_cbtn;
 
     private get type() : int { return DeployServer.JobType.MONITORPROCESS; }
 
@@ -12,10 +13,12 @@ public class MonitorProcessJobDialog : CommonJobDialog
         if (detail != null)
         {
             this._exe_path.text = detail.monitorprocess_exe_path;
+            this._auto_start_cbtn.selected = detail.monitorprocess_auto_start;
         }
         else
         {
             this._exe_path.text = "";
+            this._auto_start_cbtn.selected = false;
         }
     }
 
@@ -23,6 +26,7 @@ public class MonitorProcessJobDialog : CommonJobDialog
     {
         var detail = new DeployServer.JobInfoDetail();
         detail.monitorprocess_exe_path = this._exe_path.text;
+        detail.monitorprocess_auto_start = this._auto_start_cbtn.selected;
         return detail;
     }
 

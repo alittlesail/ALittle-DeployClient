@@ -82,8 +82,8 @@ option_map : {}
 })
 ALittle.RegStruct(1232578034, "DeployServer.JobInfoDetail", {
 name : "DeployServer.JobInfoDetail", ns_name : "DeployServer", rl_name : "JobInfoDetail", hash_code : 1232578034,
-name_list : ["batch_dir","batch_cmd","batch_param","deepcopy_src","deepcopy_dst","deepcopy_ext","copyfile_src","copyfile_file","copyfile_dst","virtualkey_exepath","virtualkey_cmd","wait_p_exit_exe_path","wait_p_exit_max_time","createprocess_dir","createprocess_cmd","createprocess_param","killprocess_exe_path","r2r_resharper_exe_path","r2r_resharper_cache_path","r2r_resharper_output_path","r2r_resharper_sln_path","r2r_resharper_dotsettings_path","r2r_redmine_url","r2r_redmine_account","r2r_redmine_password","r2r_redmine_project_id","r2r_redmine_account_id","r2r_redmine_account_map","r2r_curl_exe_path","r2r_code_tool","igg_chat_room_id","igg_chat_title","igg_chat_content","igg_chat_token","monitorprocess_exe_path"],
-type_list : ["string","string","string","string","string","string","string","List<string>","string","string","List<string>","List<string>","int","string","string","string","List<string>","string","string","string","string","string","string","string","string","string","string","Map<string,int>","string","string","string","string","string","string","string"],
+name_list : ["batch_dir","batch_cmd","batch_param","deepcopy_src","deepcopy_dst","deepcopy_ext","copyfile_src","copyfile_file","copyfile_dst","virtualkey_exepath","virtualkey_cmd","wait_p_exit_exe_path","wait_p_exit_max_time","createprocess_dir","createprocess_cmd","createprocess_param","killprocess_exe_path","r2r_resharper_exe_path","r2r_resharper_cache_path","r2r_resharper_output_path","r2r_resharper_sln_path","r2r_resharper_dotsettings_path","r2r_redmine_url","r2r_redmine_account","r2r_redmine_password","r2r_redmine_project_id","r2r_redmine_account_id","r2r_redmine_account_map","r2r_curl_exe_path","r2r_code_tool","igg_chat_room_id","igg_chat_title","igg_chat_content","igg_chat_token","monitorprocess_exe_path","monitorprocess_auto_start"],
+type_list : ["string","string","string","string","string","string","string","List<string>","string","List<string>","List<string>","List<string>","int","string","string","string","List<string>","string","string","string","string","string","string","string","string","string","string","Map<string,int>","string","string","string","string","string","string","string","bool"],
 option_map : {}
 })
 ALittle.RegStruct(1149037254, "DeployServer.C2SUpdateTaskInfo", {
@@ -465,7 +465,7 @@ DeployClient.DPLUITaskDetail = JavaScript.Class(ALittle.DisplayLayout, {
 		} else if (job_item.info.job_type === 3) {
 			job_item._button.text = "[复制文件] " + job_item.info.job_name + ":" + job_item.info.detail.copyfile_src + "->" + job_item.info.detail.copyfile_dst;
 		} else if (job_item.info.job_type === 4) {
-			job_item._button.text = "[发送命令] " + job_item.info.job_name + ":" + job_item.info.detail.virtualkey_exepath;
+			job_item._button.text = "[发送命令] " + job_item.info.job_name;
 		} else if (job_item.info.job_type === 5) {
 			job_item._button.text = "[等待进程退出] " + job_item.info.job_name;
 		} else if (job_item.info.job_type === 6) {
@@ -496,6 +496,9 @@ DeployClient.DPLUITaskDetail = JavaScript.Class(ALittle.DisplayLayout, {
 				}
 				content = content + "MB";
 				job_item._button.text = "[监视进程] " + job_item.info.job_name + ":" + content;
+			}
+			if (job_item.info.detail.monitorprocess_auto_start) {
+				job_item._button.text = job_item._button.text + " [自动启动]";
 			}
 		}
 		if (this._task_item.info.status === 0) {

@@ -17,24 +17,19 @@ end
 
 function DeployClient.SendVirtualKeyJobDialog:ShowDetail(detail)
 	if detail ~= nil then
-		self._exe_path.text = detail.virtualkey_exepath
+		self._exe_path_list.text = ALittle.String_Join(detail.virtualkey_exepath, "\n")
 		self._cmd_list.text = ALittle.String_Join(detail.virtualkey_cmd, "\n")
 	else
-		self._exe_path.text = ""
+		self._exe_path_list.text = ""
 		self._cmd_list.text = ""
 	end
 end
 
 function DeployClient.SendVirtualKeyJobDialog:GetDetail()
 	local detail = {}
-	detail.virtualkey_exepath = self._exe_path.text
+	detail.virtualkey_exepath = ALittle.String_SplitSepList(self._exe_path_list.text, {"\r", "\n"})
 	detail.virtualkey_cmd = ALittle.String_SplitSepList(self._cmd_list.text, {"\r", "\n"})
 	return detail
 end
-
-function DeployClient.SendVirtualKeyJobDialog:HandleExeBrowserClick(event)
-	self._exe_path.text = DeployClient.g_FileRemoteSelectDialog:ShowSelect()
-end
-DeployClient.SendVirtualKeyJobDialog.HandleExeBrowserClick = Lua.CoWrap(DeployClient.SendVirtualKeyJobDialog.HandleExeBrowserClick)
 
 end

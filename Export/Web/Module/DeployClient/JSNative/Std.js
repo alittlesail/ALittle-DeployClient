@@ -1794,7 +1794,7 @@ ALittle.JsonConfig = JavaScript.Class(ALittle.IJsonConfig, {
 		}
 		let [error, json_content] = (function() { try { let ___VALUE = ALittle.String_JsonDecode.call(undefined, content); return [undefined, ___VALUE]; } catch (___ERROR) { return [___ERROR.message]; } }).call(this);
 		if (error !== undefined) {
-			ALittle.Log("Json Decode failed." + file_path + ", " + error);
+			ALittle.Error("Json Decode failed." + file_path + ", " + error);
 			return;
 		}
 		this._config_map = json_content;
@@ -2184,8 +2184,8 @@ if (typeof ALittle === "undefined") window.ALittle = {};
 
 ALittle.RegStruct(839664979, "ALittle.PathAttribute", {
 name : "ALittle.PathAttribute", ns_name : "ALittle", rl_name : "PathAttribute", hash_code : 839664979,
-name_list : ["directory","size"],
-type_list : ["bool","int"],
+name_list : ["directory","size","create_time"],
+type_list : ["bool","int","int"],
 option_map : {}
 })
 
@@ -2888,6 +2888,9 @@ ALittle.IHttpSenderNative = JavaScript.Class(undefined, {
 	},
 	Stop : function() {
 	},
+	GetHead : function() {
+		return undefined;
+	},
 	GetResponse : function() {
 		return undefined;
 	},
@@ -2932,6 +2935,12 @@ ALittle.HttpSenderTemplate = JavaScript.Class(ALittle.IHttpSender, {
 	},
 	Stop : function() {
 		this._interface.Stop();
+	},
+	GetHead : function() {
+		return this._interface.GetHead();
+	},
+	GetResponse : function() {
+		return this._interface.GetResponse();
 	},
 	HandleSucceed : function() {
 		__HttpSenderMap.delete(this._interface.GetID());
@@ -3679,14 +3688,15 @@ if (typeof JavaScript === "undefined") window.JavaScript = {};
 
 ALittle.RegStruct(-1393456776, "JavaScript.FileInfo", {
 name : "JavaScript.FileInfo", ns_name : "JavaScript", rl_name : "FileInfo", hash_code : -1393456776,
-name_list : ["parent","name","content","buffer","is_directory","file"],
-type_list : ["JavaScript.FileInfo","string","string","native javascript.ArrayBuffer","bool","Map<string,JavaScript.FileInfo>"],
+name_list : ["parent","name","content","buffer","is_directory","file","create_time"],
+type_list : ["JavaScript.FileInfo","string","string","native javascript.ArrayBuffer","bool","Map<string,JavaScript.FileInfo>","int"],
 option_map : {}
 })
 
 let root = {};
 root.is_directory = true;
 root.name = "";
+root.create_time = ALittle.Time_GetCurTime();
 let cur_dir = "";
 let Path_FilterEmpty = function(list) {
 	let new_list = [];
@@ -3836,6 +3846,7 @@ JavaScript.File_GetPathAttribute = function(path) {
 	let attr = {};
 	attr.directory = cur_file.is_directory;
 	attr.size = 0;
+	attr.create_time = cur_file.create_time;
 	if (!cur_file.is_directory) {
 		if (cur_file.buffer !== undefined) {
 			attr.size = cur_file.buffer.byteLength;
@@ -3882,6 +3893,7 @@ JavaScript.File_GetFileAttrByDir = function(path, file_map) {
 			let attr = {};
 			attr.directory = false;
 			attr.size = ALittle.String_Len(value.content);
+			attr.create_time = value.create_time;
 			file_map[file_path] = attr;
 		}
 	}
@@ -3961,11 +3973,13 @@ JavaScript.File_GetNameListByDir = function(path, file_map) {
 			let attr = {};
 			attr.directory = true;
 			attr.size = 0;
+			attr.create_time = value.create_time;
 			file_map[name] = attr;
 		} else {
 			let attr = {};
 			attr.directory = false;
 			attr.size = ALittle.String_Len(value.content);
+			attr.create_time = value.create_time;
 			file_map[name] = attr;
 		}
 	}
@@ -4066,6 +4080,7 @@ JavaScript.File_MakeDir = function(path) {
 	file.is_directory = true;
 	file.name = list[list_len - 1];
 	file.parent = cur;
+	file.create_time = ALittle.Time_GetCurTime();
 	cur.file[list[list_len - 1]] = file;
 	return true;
 }
@@ -4131,6 +4146,7 @@ JavaScript.File_SaveFile = function(path, content, buffer) {
 	file.is_directory = false;
 	file.name = list[list_len - 1];
 	file.parent = cur;
+	file.create_time = ALittle.Time_GetCurTime();
 	cur.file[list[list_len - 1]] = file;
 	return true;
 }
@@ -4393,6 +4409,9 @@ JavaScript.JHttpInterface = JavaScript.Class(ALittle.IHttpSenderNative, {
 			this._request.abort();
 		}
 	},
+	GetHead : function() {
+		return this._request.responseText;
+	},
 	GetResponse : function() {
 		return this._request.responseText;
 	},
@@ -4442,6 +4461,9 @@ JavaScript.JHttpWxInterface = JavaScript.Class(ALittle.IHttpSenderNative, {
 		if (this._request !== undefined) {
 			this._request.abort();
 		}
+	},
+	GetHead : function() {
+		return undefined;
 	},
 	GetResponse : function() {
 		return this._response.data;

@@ -3,7 +3,7 @@ namespace DeployClient;
 
 public class SendVirtualKeyJobDialog : CommonJobDialog
 {
-	private ALittle.ImageInput _exe_path;
+	private ALittle.ImageEdit _exe_path_list;
     private ALittle.ImageEdit _cmd_list;
 
     private get type() : int { return DeployServer.JobType.SENDVIRTUALKEY; }
@@ -12,12 +12,12 @@ public class SendVirtualKeyJobDialog : CommonJobDialog
     {
         if (detail != null)
         {
-            this._exe_path.text = detail.virtualkey_exepath;
+            this._exe_path_list.text = ALittle.String_Join(detail.virtualkey_exepath, "\n");
             this._cmd_list.text = ALittle.String_Join(detail.virtualkey_cmd, "\n");
         }
         else
         {
-            this._exe_path.text = "";
+            this._exe_path_list.text = "";
             this._cmd_list.text = "";
         }
     }
@@ -25,13 +25,8 @@ public class SendVirtualKeyJobDialog : CommonJobDialog
     private fun GetDetail() : DeployServer.JobInfoDetail
     {
         var detail = new DeployServer.JobInfoDetail();
-        detail.virtualkey_exepath = this._exe_path.text;
+        detail.virtualkey_exepath = ALittle.String_SplitSepList(this._exe_path_list.text, ["\r", "\n"]);
         detail.virtualkey_cmd = ALittle.String_SplitSepList(this._cmd_list.text, ["\r", "\n"]);
         return detail;
-    }
-
-    private async fun HandleExeBrowserClick(ALittle.UIClickEvent event)
-    {
-        this._exe_path.text = g_FileRemoteSelectDialog.ShowSelect();
     }
 }

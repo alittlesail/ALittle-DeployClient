@@ -18,14 +18,17 @@ end
 function DeployClient.MonitorProcessJobDialog:ShowDetail(detail)
 	if detail ~= nil then
 		self._exe_path.text = detail.monitorprocess_exe_path
+		self._auto_start_cbtn.selected = detail.monitorprocess_auto_start
 	else
 		self._exe_path.text = ""
+		self._auto_start_cbtn.selected = false
 	end
 end
 
 function DeployClient.MonitorProcessJobDialog:GetDetail()
 	local detail = {}
 	detail.monitorprocess_exe_path = self._exe_path.text
+	detail.monitorprocess_auto_start = self._auto_start_cbtn.selected
 	return detail
 end
 

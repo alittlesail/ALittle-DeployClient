@@ -405,7 +405,7 @@ public class DPLUITaskDetail : ALittle.DisplayLayout
         elseif (job_item.info.job_type == DeployServer.JobType.COPYFILE)
         	job_item._button.text = "[复制文件] "..job_item.info.job_name..":"..job_item.info.detail.copyfile_src.."->"..job_item.info.detail.copyfile_dst;
         elseif (job_item.info.job_type == DeployServer.JobType.SENDVIRTUALKEY)
-        	job_item._button.text = "[发送命令] "..job_item.info.job_name..":"..job_item.info.detail.virtualkey_exepath;
+        	job_item._button.text = "[发送命令] "..job_item.info.job_name;
         elseif (job_item.info.job_type == DeployServer.JobType.WAITPROCSSEXIT)
         	job_item._button.text = "[等待进程退出] "..job_item.info.job_name;
         elseif (job_item.info.job_type == DeployServer.JobType.CREATEPROCESS)
@@ -436,7 +436,10 @@ public class DPLUITaskDetail : ALittle.DisplayLayout
                     content = content.."?";
                 content = content.."MB";
                 job_item._button.text = "[监视进程] "..job_item.info.job_name..":"..content;
-            }   	
+            }
+            
+            if (job_item.info.detail.monitorprocess_auto_start)
+            	job_item._button.text = job_item._button.text.." [自动启动]"; 	
         }
 
         if (this._task_item.info.status == DeployServer.TaskStatus.IDLE)
