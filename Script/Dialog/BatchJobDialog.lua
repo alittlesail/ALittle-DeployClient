@@ -20,10 +20,12 @@ function DeployClient.BatchJobDialog:ShowDetail(detail)
 		self._dir.text = detail.batch_dir
 		self._cmd.text = detail.batch_cmd
 		self._param.text = detail.batch_param
+		self._wait_complete_cbtn.selected = detail.batch_wait
 	else
 		self._dir.text = ""
 		self._cmd.text = ""
 		self._param.text = ""
+		self._wait_complete_cbtn.selected = true
 	end
 end
 
@@ -32,6 +34,7 @@ function DeployClient.BatchJobDialog:GetDetail()
 	detail.batch_dir = self._dir.text
 	detail.batch_cmd = self._cmd.text
 	detail.batch_param = self._param.text
+	detail.batch_wait = self._wait_complete_cbtn.selected
 	return detail
 end
 

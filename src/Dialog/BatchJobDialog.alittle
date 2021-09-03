@@ -6,6 +6,7 @@ public class BatchJobDialog : CommonJobDialog
 	private ALittle.ImageInput _dir;
 	private ALittle.ImageInput _cmd;
 	private ALittle.ImageEdit _param;
+    private ALittle.TextCheckButton _wait_complete_cbtn;
 
     private get type() : int { return DeployServer.JobType.BATCH; }
 
@@ -16,12 +17,14 @@ public class BatchJobDialog : CommonJobDialog
             this._dir.text = detail.batch_dir;
             this._cmd.text = detail.batch_cmd;
             this._param.text = detail.batch_param;
+            this._wait_complete_cbtn.selected = detail.batch_wait;
         }
         else
         {
             this._dir.text = "";
             this._cmd.text = "";
             this._param.text = "";
+            this._wait_complete_cbtn.selected = true;
         }
     }
 
@@ -31,6 +34,7 @@ public class BatchJobDialog : CommonJobDialog
         detail.batch_dir = this._dir.text;
         detail.batch_cmd = this._cmd.text;
         detail.batch_param = this._param.text;
+        detail.batch_wait = this._wait_complete_cbtn.selected;
         return detail;
     }
 
