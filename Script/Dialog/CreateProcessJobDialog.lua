@@ -17,32 +17,16 @@ end
 
 function DeployClient.CreateProcessJobDialog:ShowDetail(detail)
 	if detail ~= nil then
-		self._dir.text = detail.createprocess_dir
-		self._cmd.text = detail.createprocess_cmd
-		self._param.text = detail.createprocess_param
+		self._exe_path.text = ALittle.String_Join(detail.createprocess_exe_path, "\n")
 	else
-		self._dir.text = ""
-		self._cmd.text = ""
-		self._param.text = ""
+		self._exe_path.text = ""
 	end
 end
 
 function DeployClient.CreateProcessJobDialog:GetDetail()
 	local detail = {}
-	detail.createprocess_dir = self._dir.text
-	detail.createprocess_cmd = self._cmd.text
-	detail.createprocess_param = self._param.text
+	detail.createprocess_exe_path = ALittle.String_SplitSepList(self._exe_path.text, {"\r", "\n"})
 	return detail
 end
-
-function DeployClient.CreateProcessJobDialog:HandleDirBrowserClick(event)
-	self._dir.text = DeployClient.g_FileRemoteSelectDialog:ShowSelect()
-end
-DeployClient.CreateProcessJobDialog.HandleDirBrowserClick = Lua.CoWrap(DeployClient.CreateProcessJobDialog.HandleDirBrowserClick)
-
-function DeployClient.CreateProcessJobDialog:HandleCmdBrowserClick(event)
-	self._cmd.text = DeployClient.g_FileRemoteSelectDialog:ShowSelect()
-end
-DeployClient.CreateProcessJobDialog.HandleCmdBrowserClick = Lua.CoWrap(DeployClient.CreateProcessJobDialog.HandleCmdBrowserClick)
 
 end

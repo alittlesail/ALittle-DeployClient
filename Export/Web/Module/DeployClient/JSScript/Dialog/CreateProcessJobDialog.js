@@ -9,27 +9,15 @@ DeployClient.CreateProcessJobDialog = JavaScript.Class(DeployClient.CommonJobDia
 	},
 	ShowDetail : function(detail) {
 		if (detail !== undefined) {
-			this._dir.text = detail.createprocess_dir;
-			this._cmd.text = detail.createprocess_cmd;
-			this._param.text = detail.createprocess_param;
+			this._exe_path.text = ALittle.String_Join(detail.createprocess_exe_path, "\n");
 		} else {
-			this._dir.text = "";
-			this._cmd.text = "";
-			this._param.text = "";
+			this._exe_path.text = "";
 		}
 	},
 	GetDetail : function() {
 		let detail = {};
-		detail.createprocess_dir = this._dir.text;
-		detail.createprocess_cmd = this._cmd.text;
-		detail.createprocess_param = this._param.text;
+		detail.createprocess_exe_path = ALittle.String_SplitSepList(this._exe_path.text, ["\r", "\n"]);
 		return detail;
-	},
-	HandleDirBrowserClick : async function(event) {
-		this._dir.text = await DeployClient.g_FileRemoteSelectDialog.ShowSelect();
-	},
-	HandleCmdBrowserClick : async function(event) {
-		this._cmd.text = await DeployClient.g_FileRemoteSelectDialog.ShowSelect();
 	},
 }, "DeployClient.CreateProcessJobDialog");
 

@@ -409,7 +409,7 @@ public class DPLUITaskDetail : ALittle.DisplayLayout
         elseif (job_item.info.job_type == DeployServer.JobType.WAITPROCSSEXIT)
         	job_item._button.text = "[等待进程退出] "..job_item.info.job_name;
         elseif (job_item.info.job_type == DeployServer.JobType.CREATEPROCESS)
-        	job_item._button.text = "[创建进程] "..job_item.info.job_name..":"..job_item.info.detail.createprocess_cmd;
+        	job_item._button.text = "[创建进程] "..job_item.info.job_name;
         elseif (job_item.info.job_type == DeployServer.JobType.KILLPROCESS)
         	job_item._button.text = "[杀死进程] "..job_item.info.job_name;
         elseif (job_item.info.job_type == DeployServer.JobType.RESHARPERREDMINE)
