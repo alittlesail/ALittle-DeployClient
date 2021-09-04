@@ -388,7 +388,10 @@ public class DPLUITaskDetail : ALittle.DisplayLayout
         build_item._button.group = this._build_group;
         build_item._button.AddEventListener(this, this.HandleBuildRButtonDown);
         build_item._button.AddEventListener(this, this.HandlePreSeeBuild);
+        [Language(Lua)]
         build_item._download_button.AddEventListener(this, this.HandleDownloadBuild);
+        [Language(JavaScript)]
+        build_item._download_button.AddEventListener(this, this.HandleDownloadBuildForJs);
         build_item._download_button._user_data = build_item;
         this._build_list.AddChild(build_item.item);
         this._build_list.ScrollToBottom();
@@ -515,9 +518,24 @@ public class DPLUITaskDetail : ALittle.DisplayLayout
         msg.create_time = build_item.info.create_time;
         msg.create_index = build_item.info.create_index;
 
-        var sender = g_DPLCenter.CreateHttpFileSender(event.path.."/"..ALittle.Time_GetCurDate(build_item.info.create_time)..".log");
+        var path = event.path.."/"..ALittle.Time_GetCurDate(build_item.info.create_time)..".log";
+        var sender = g_DPLCenter.CreateHttpFileSender(path);
         var error = DeployServer.HandleDownloadBuild(sender, msg);
         if (error != null) g_AUITool.ShowNotice("提示", error);
+        else g_AUITool.ShowNotice("提示", "下载成功:"..path);
+    }
+
+    [Language(JavaScript)]
+    private fun HandleDownloadBuildForJs(ALittle.UILButtonDownEvent event)
+    {
+        var build_item = cast<BuildItemInfo>(event.target._user_data);
+        var build_index = this._build_list.GetChildIndex(build_item.item);
+    
+        var url = "http://"..location.host.."/DeployServer.QDownloadBuild";
+        url = url.."?task_id="..this._task_item.info.task_id;
+        url = url.."&create_time="..build_item.info.create_time;
+        url = url.."&create_index="..build_item.info.create_index;
+        ALittle.System_OpenUrlBySystemBrowser(url);
     }
 
     private fun HandleModifyJob(JobItemInfo info, int index)

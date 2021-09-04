@@ -584,10 +584,13 @@ function DeployClient.DPLUITaskDetail:HandleDownloadBuild(event)
 	msg.task_id = self._task_item.info.task_id
 	msg.create_time = build_item.info.create_time
 	msg.create_index = build_item.info.create_index
-	local sender = DeployClient.g_DPLCenter:CreateHttpFileSender(event.path .. "/" .. ALittle.Time_GetCurDate(build_item.info.create_time) .. ".log")
+	local path = event.path .. "/" .. ALittle.Time_GetCurDate(build_item.info.create_time) .. ".log"
+	local sender = DeployClient.g_DPLCenter:CreateHttpFileSender(path)
 	local error = ALittle.IHttpFileSender.InvokeDownload("DeployServer.QDownloadBuild", sender, msg)
 	if error ~= nil then
 		g_AUITool:ShowNotice("提示", error)
+	else
+		g_AUITool:ShowNotice("提示", "下载成功:" .. path)
 	end
 end
 DeployClient.DPLUITaskDetail.HandleDownloadBuild = Lua.CoWrap(DeployClient.DPLUITaskDetail.HandleDownloadBuild)

@@ -26,6 +26,12 @@ name_list : [],
 type_list : [],
 option_map : {}
 })
+ALittle.RegStruct(1883782801, "ALittle.UILButtonDownEvent", {
+name : "ALittle.UILButtonDownEvent", ns_name : "ALittle", rl_name : "UILButtonDownEvent", hash_code : 1883782801,
+name_list : ["target","abs_x","abs_y","rel_x","rel_y","count","is_drag"],
+type_list : ["ALittle.DisplayObject","double","double","double","double","int","bool"],
+option_map : {}
+})
 ALittle.RegStruct(1811432266, "DeployServer.D_BuildInfo", {
 name : "DeployServer.D_BuildInfo", ns_name : "DeployServer", rl_name : "D_BuildInfo", hash_code : 1811432266,
 name_list : ["create_time","create_index"],
@@ -36,12 +42,6 @@ ALittle.RegStruct(1809409109, "DeployServer.S2CDeleteJob", {
 name : "DeployServer.S2CDeleteJob", ns_name : "DeployServer", rl_name : "S2CDeleteJob", hash_code : 1809409109,
 name_list : [],
 type_list : [],
-option_map : {}
-})
-ALittle.RegStruct(1800966813, "ALittle.UISystemSelectDirectoryEvent", {
-name : "ALittle.UISystemSelectDirectoryEvent", ns_name : "ALittle", rl_name : "UISystemSelectDirectoryEvent", hash_code : 1800966813,
-name_list : ["target","path"],
-type_list : ["ALittle.DisplayObject","string"],
 option_map : {}
 })
 ALittle.RegStruct(1624339767, "DeployServer.S2CMoveJob", {
@@ -451,7 +451,7 @@ DeployClient.DPLUITaskDetail = JavaScript.Class(ALittle.DisplayLayout, {
 		build_item._button.group = this._build_group;
 		build_item._button.AddEventListener(___all_struct.get(-641444818), this, this.HandleBuildRButtonDown);
 		build_item._button.AddEventListener(___all_struct.get(958494922), this, this.HandlePreSeeBuild);
-		build_item._download_button.AddEventListener(___all_struct.get(1800966813), this, this.HandleDownloadBuild);
+		build_item._download_button.AddEventListener(___all_struct.get(1883782801), this, this.HandleDownloadBuildForJs);
 		build_item._download_button._user_data = build_item;
 		this._build_list.AddChild(build_item.item);
 		this._build_list.ScrollToBottom();
@@ -559,11 +559,23 @@ DeployClient.DPLUITaskDetail = JavaScript.Class(ALittle.DisplayLayout, {
 		msg.task_id = this._task_item.info.task_id;
 		msg.create_time = build_item.info.create_time;
 		msg.create_index = build_item.info.create_index;
-		let sender = DeployClient.g_DPLCenter.CreateHttpFileSender(event.path + "/" + ALittle.Time_GetCurDate(build_item.info.create_time) + ".log");
+		let path = event.path + "/" + ALittle.Time_GetCurDate(build_item.info.create_time) + ".log";
+		let sender = DeployClient.g_DPLCenter.CreateHttpFileSender(path);
 		let [error] = await ALittle.IHttpFileSender.InvokeDownload("DeployServer.QDownloadBuild", sender, msg);
 		if (error !== undefined) {
 			g_AUITool.ShowNotice("提示", error);
+		} else {
+			g_AUITool.ShowNotice("提示", "下载成功:" + path);
 		}
+	},
+	HandleDownloadBuildForJs : function(event) {
+		let build_item = event.target._user_data;
+		let build_index = this._build_list.GetChildIndex(build_item.item);
+		let url = "http://" + location.host + "/DeployServer.QDownloadBuild";
+		url = url + "?task_id=" + this._task_item.info.task_id;
+		url = url + "&create_time=" + build_item.info.create_time;
+		url = url + "&create_index=" + build_item.info.create_index;
+		ALittle.System_OpenUrlBySystemBrowser(url);
 	},
 	HandleModifyJob : function(info, index) {
 		let ui = undefined;
