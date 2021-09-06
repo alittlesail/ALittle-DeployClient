@@ -74,7 +74,7 @@ public class FileRemoteSelectDialog : ALittle.EventDispatcher
             else this.SetBasePath(rsp.path);
         }
 
-        var result = this._layout.ShowSelect();
+        var result = this._layout.ShowSelect(file_or_dir);
         this._dialog.visible = false;
         return result;
     }
