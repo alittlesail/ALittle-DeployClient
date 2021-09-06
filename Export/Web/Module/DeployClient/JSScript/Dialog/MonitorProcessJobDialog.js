@@ -23,7 +23,7 @@ DeployClient.MonitorProcessJobDialog = JavaScript.Class(DeployClient.CommonJobDi
 		return detail;
 	},
 	HandleExeBrowserClick : async function(event) {
-		this._exe_path.text = await DeployClient.g_FileRemoteSelectDialog.ShowSelect();
+		this._exe_path.text = await DeployClient.g_FileRemoteSelectDialog.ShowSelect(true);
 	},
 }, "DeployClient.MonitorProcessJobDialog");
 

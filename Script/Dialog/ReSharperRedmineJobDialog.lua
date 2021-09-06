@@ -92,32 +92,32 @@ function DeployClient.ReSharperRedmineJobDialog:GetDetail()
 end
 
 function DeployClient.ReSharperRedmineJobDialog:HandleExeBrowserClick(event)
-	self._resharper_exe_path.text = DeployClient.g_FileRemoteSelectDialog:ShowSelect()
+	self._resharper_exe_path.text = DeployClient.g_FileRemoteSelectDialog:ShowSelect(true)
 end
 DeployClient.ReSharperRedmineJobDialog.HandleExeBrowserClick = Lua.CoWrap(DeployClient.ReSharperRedmineJobDialog.HandleExeBrowserClick)
 
 function DeployClient.ReSharperRedmineJobDialog:HandleCacheBrowserClick(event)
-	self._resharper_cache_path.text = DeployClient.g_FileRemoteSelectDialog:ShowSelect()
+	self._resharper_cache_path.text = DeployClient.g_FileRemoteSelectDialog:ShowSelect(false)
 end
 DeployClient.ReSharperRedmineJobDialog.HandleCacheBrowserClick = Lua.CoWrap(DeployClient.ReSharperRedmineJobDialog.HandleCacheBrowserClick)
 
 function DeployClient.ReSharperRedmineJobDialog:HandleOutputBrowserClick(event)
-	self._resharper_output_path.text = DeployClient.g_FileRemoteSelectDialog:ShowSelect()
+	self._resharper_output_path.text = DeployClient.g_FileRemoteSelectDialog:ShowSelect(false)
 end
 DeployClient.ReSharperRedmineJobDialog.HandleOutputBrowserClick = Lua.CoWrap(DeployClient.ReSharperRedmineJobDialog.HandleOutputBrowserClick)
 
 function DeployClient.ReSharperRedmineJobDialog:HandleSlnBrowserClick(event)
-	self._resharper_sln_path.text = DeployClient.g_FileRemoteSelectDialog:ShowSelect()
+	self._resharper_sln_path.text = DeployClient.g_FileRemoteSelectDialog:ShowSelect(true)
 end
 DeployClient.ReSharperRedmineJobDialog.HandleSlnBrowserClick = Lua.CoWrap(DeployClient.ReSharperRedmineJobDialog.HandleSlnBrowserClick)
 
 function DeployClient.ReSharperRedmineJobDialog:HandleCurlBrowserClick(event)
-	self._curl_exe_path.text = DeployClient.g_FileRemoteSelectDialog:ShowSelect()
+	self._curl_exe_path.text = DeployClient.g_FileRemoteSelectDialog:ShowSelect(true)
 end
 DeployClient.ReSharperRedmineJobDialog.HandleCurlBrowserClick = Lua.CoWrap(DeployClient.ReSharperRedmineJobDialog.HandleCurlBrowserClick)
 
 function DeployClient.ReSharperRedmineJobDialog:HandleDotSettingsBrowserClick(event)
-	self._resharper_dotsettings_path.text = DeployClient.g_FileRemoteSelectDialog:ShowSelect()
+	self._resharper_dotsettings_path.text = DeployClient.g_FileRemoteSelectDialog:ShowSelect(true)
 end
 DeployClient.ReSharperRedmineJobDialog.HandleDotSettingsBrowserClick = Lua.CoWrap(DeployClient.ReSharperRedmineJobDialog.HandleDotSettingsBrowserClick)
 

@@ -54,8 +54,9 @@ DeployClient.FileRemoteSelectDialog = JavaScript.Class(ALittle.EventDispatcher, 
 		}
 		return this._layout.base_path;
 	},
-	ShowSelect : function() {
+	ShowSelect : function(file_or_dir) {
 		return new Promise((async function(___COROUTINE, ___) {
+			this.ShowDialog();
 			let msg = {};
 			let [error, rsp] = await ALittle.IMsgCommon.InvokeRPC(1018450360, DeployClient.g_DPLWebLoginManager.msg_client, msg);
 			if (error === undefined) {
@@ -66,8 +67,7 @@ DeployClient.FileRemoteSelectDialog = JavaScript.Class(ALittle.EventDispatcher, 
 					this.SetBasePath(rsp.path);
 				}
 			}
-			this.ShowDialog();
-			let result = await this._layout.ShowSelect();
+			let result = await this._layout.ShowSelect(file_or_dir);
 			this._dialog.visible = false;
 			___COROUTINE(result); return;
 		}).bind(this));
@@ -83,9 +83,6 @@ DeployClient.FileRemoteSelectDialog = JavaScript.Class(ALittle.EventDispatcher, 
 		return this._layout.SetPath(base_path, rel_path);
 	},
 	SetBasePath : function(base_path) {
-		if (this.base_path === base_path) {
-			return true;
-		}
 		return this.SetPath(base_path, "");
 	},
 	Refresh : function() {

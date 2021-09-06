@@ -33,7 +33,7 @@ function DeployClient.MonitorProcessJobDialog:GetDetail()
 end
 
 function DeployClient.MonitorProcessJobDialog:HandleExeBrowserClick(event)
-	self._exe_path.text = DeployClient.g_FileRemoteSelectDialog:ShowSelect()
+	self._exe_path.text = DeployClient.g_FileRemoteSelectDialog:ShowSelect(true)
 end
 DeployClient.MonitorProcessJobDialog.HandleExeBrowserClick = Lua.CoWrap(DeployClient.MonitorProcessJobDialog.HandleExeBrowserClick)
 

@@ -98,32 +98,32 @@ public class ReSharperRedmineJobDialog : CommonJobDialog
 
     private async fun HandleExeBrowserClick(ALittle.UIClickEvent event)
     {
-        this._resharper_exe_path.text = g_FileRemoteSelectDialog.ShowSelect();
+        this._resharper_exe_path.text = g_FileRemoteSelectDialog.ShowSelect(true);
     }
 
     private async fun HandleCacheBrowserClick(ALittle.UIClickEvent event)
     {
-        this._resharper_cache_path.text = g_FileRemoteSelectDialog.ShowSelect();
+        this._resharper_cache_path.text = g_FileRemoteSelectDialog.ShowSelect(false);
     }
 
     private async fun HandleOutputBrowserClick(ALittle.UIClickEvent event)
     {
-        this._resharper_output_path.text = g_FileRemoteSelectDialog.ShowSelect();
+        this._resharper_output_path.text = g_FileRemoteSelectDialog.ShowSelect(false);
     }
 
     private async fun HandleSlnBrowserClick(ALittle.UIClickEvent event)
     {
-        this._resharper_sln_path.text = g_FileRemoteSelectDialog.ShowSelect();
+        this._resharper_sln_path.text = g_FileRemoteSelectDialog.ShowSelect(true);
     }
 
     private async fun HandleCurlBrowserClick(ALittle.UIClickEvent event)
     {
-        this._curl_exe_path.text = g_FileRemoteSelectDialog.ShowSelect();
+        this._curl_exe_path.text = g_FileRemoteSelectDialog.ShowSelect(true);
     }
 
     private async fun HandleDotSettingsBrowserClick(ALittle.UIClickEvent event)
     {
-        this._resharper_dotsettings_path.text = g_FileRemoteSelectDialog.ShowSelect();
+        this._resharper_dotsettings_path.text = g_FileRemoteSelectDialog.ShowSelect(true);
     }
 }
 

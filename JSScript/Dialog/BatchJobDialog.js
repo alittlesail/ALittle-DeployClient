@@ -29,7 +29,7 @@ DeployClient.BatchJobDialog = JavaScript.Class(DeployClient.CommonJobDialog, {
 		return detail;
 	},
 	HandleBrowserClick : async function(event) {
-		this._dir.text = await DeployClient.g_FileRemoteSelectDialog.ShowSelect();
+		this._dir.text = await DeployClient.g_FileRemoteSelectDialog.ShowSelect(false);
 	},
 }, "DeployClient.BatchJobDialog");
 

@@ -40,6 +40,6 @@ public class BatchJobDialog : CommonJobDialog
 
     private async fun HandleBrowserClick(ALittle.UIClickEvent event)
     {
-        this._dir.text = g_FileRemoteSelectDialog.ShowSelect();
+        this._dir.text = g_FileRemoteSelectDialog.ShowSelect(false);
     }
 }

@@ -36,12 +36,12 @@ function DeployClient.DeepCopyJobDialog:GetDetail()
 end
 
 function DeployClient.DeepCopyJobDialog:HandleSrcBrowserClick(event)
-	self._src_dir.text = DeployClient.g_FileRemoteSelectDialog:ShowSelect()
+	self._src_dir.text = DeployClient.g_FileRemoteSelectDialog:ShowSelect(false)
 end
 DeployClient.DeepCopyJobDialog.HandleSrcBrowserClick = Lua.CoWrap(DeployClient.DeepCopyJobDialog.HandleSrcBrowserClick)
 
 function DeployClient.DeepCopyJobDialog:HandleDstBrowserClick(event)
-	self._dst_dir.text = DeployClient.g_FileRemoteSelectDialog:ShowSelect()
+	self._dst_dir.text = DeployClient.g_FileRemoteSelectDialog:ShowSelect(false)
 end
 DeployClient.DeepCopyJobDialog.HandleDstBrowserClick = Lua.CoWrap(DeployClient.DeepCopyJobDialog.HandleDstBrowserClick)
 

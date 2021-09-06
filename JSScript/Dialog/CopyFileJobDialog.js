@@ -26,10 +26,10 @@ DeployClient.CopyFileJobDialog = JavaScript.Class(DeployClient.CommonJobDialog, 
 		return detail;
 	},
 	HandleSrcBrowserClick : async function(event) {
-		this._src_dir.text = await DeployClient.g_FileRemoteSelectDialog.ShowSelect();
+		this._src_dir.text = await DeployClient.g_FileRemoteSelectDialog.ShowSelect(false);
 	},
 	HandleDstBrowserClick : async function(event) {
-		this._dst_dir.text = await DeployClient.g_FileRemoteSelectDialog.ShowSelect();
+		this._dst_dir.text = await DeployClient.g_FileRemoteSelectDialog.ShowSelect(false);
 	},
 }, "DeployClient.CopyFileJobDialog");
 

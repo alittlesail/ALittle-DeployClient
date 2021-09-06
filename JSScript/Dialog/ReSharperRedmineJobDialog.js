@@ -88,22 +88,22 @@ DeployClient.ReSharperRedmineJobDialog = JavaScript.Class(DeployClient.CommonJob
 		return detail;
 	},
 	HandleExeBrowserClick : async function(event) {
-		this._resharper_exe_path.text = await DeployClient.g_FileRemoteSelectDialog.ShowSelect();
+		this._resharper_exe_path.text = await DeployClient.g_FileRemoteSelectDialog.ShowSelect(true);
 	},
 	HandleCacheBrowserClick : async function(event) {
-		this._resharper_cache_path.text = await DeployClient.g_FileRemoteSelectDialog.ShowSelect();
+		this._resharper_cache_path.text = await DeployClient.g_FileRemoteSelectDialog.ShowSelect(false);
 	},
 	HandleOutputBrowserClick : async function(event) {
-		this._resharper_output_path.text = await DeployClient.g_FileRemoteSelectDialog.ShowSelect();
+		this._resharper_output_path.text = await DeployClient.g_FileRemoteSelectDialog.ShowSelect(false);
 	},
 	HandleSlnBrowserClick : async function(event) {
-		this._resharper_sln_path.text = await DeployClient.g_FileRemoteSelectDialog.ShowSelect();
+		this._resharper_sln_path.text = await DeployClient.g_FileRemoteSelectDialog.ShowSelect(true);
 	},
 	HandleCurlBrowserClick : async function(event) {
-		this._curl_exe_path.text = await DeployClient.g_FileRemoteSelectDialog.ShowSelect();
+		this._curl_exe_path.text = await DeployClient.g_FileRemoteSelectDialog.ShowSelect(true);
 	},
 	HandleDotSettingsBrowserClick : async function(event) {
-		this._resharper_dotsettings_path.text = await DeployClient.g_FileRemoteSelectDialog.ShowSelect();
+		this._resharper_dotsettings_path.text = await DeployClient.g_FileRemoteSelectDialog.ShowSelect(true);
 	},
 }, "DeployClient.ReSharperRedmineJobDialog");
 

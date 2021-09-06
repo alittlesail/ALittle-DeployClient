@@ -66,8 +66,9 @@ function DeployClient.FileRemoteSelectDialog.__getter:base_path()
 	return self._layout.base_path
 end
 
-function DeployClient.FileRemoteSelectDialog:ShowSelect()
+function DeployClient.FileRemoteSelectDialog:ShowSelect(file_or_dir)
 	local ___COROUTINE = coroutine.running()
+	self:ShowDialog()
 	local msg = {}
 	local error, rsp = ALittle.IMsgCommon.InvokeRPC(1018450360, DeployClient.g_DPLWebLoginManager.msg_client, msg)
 	if error == nil then
@@ -78,8 +79,7 @@ function DeployClient.FileRemoteSelectDialog:ShowSelect()
 			self:SetBasePath(rsp.path)
 		end
 	end
-	self:ShowDialog()
-	local result = self._layout:ShowSelect()
+	local result = self._layout:ShowSelect(file_or_dir)
 	self._dialog.visible = false
 	return result
 end
@@ -97,9 +97,6 @@ function DeployClient.FileRemoteSelectDialog:SetPath(base_path, rel_path)
 end
 
 function DeployClient.FileRemoteSelectDialog:SetBasePath(base_path)
-	if self.base_path == base_path then
-		return true
-	end
 	return self:SetPath(base_path, "")
 end
 
