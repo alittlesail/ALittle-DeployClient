@@ -18,14 +18,17 @@ end
 function DeployClient.KillProcessJobDialog:ShowDetail(detail)
 	if detail ~= nil then
 		self._exe_path.text = ALittle.String_Join(detail.killprocess_exe_path, "\n")
+		self._delay_time.text = detail.killprocess_delay_time
 	else
 		self._exe_path.text = ""
+		self._delay_time.text = "0"
 	end
 end
 
 function DeployClient.KillProcessJobDialog:GetDetail()
 	local detail = {}
 	detail.killprocess_exe_path = ALittle.String_SplitSepList(self._exe_path.text, {"\r", "\n"})
+	detail.killprocess_delay_time = ALittle.Math_ToIntOrZero(self._delay_time.text)
 	return detail
 end
 
